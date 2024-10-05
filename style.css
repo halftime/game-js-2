@@ -1,0 +1,16 @@
+html, body {
+    padding: 0%;
+    margin: 0%;
+    overflow: hidden;
+    image-rendering: auto;
+}
+
+canvas {
+    width: 1000px;
+    height: 750px;
+    background: whitesmoke;
+    display: flex;
+    margin: auto;
+    margin-top: 50px;
+    border: 5px solid darkolivegreen;
+}
