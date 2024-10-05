@@ -1,4 +1,5 @@
 import Player from './player.js';
+import { resources } from './resource.js';
 
 
 const canvas = document.getElementById('gameCanvas');
@@ -74,6 +75,15 @@ let lastFrameTime = performance.now();
 function gameLoop() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    const background = resources.images.background;
+    if (background.loaded) {
+        ctx.drawImage(background.image, 0, 0, canvas.width, canvas.height);
+    }
+    
+    if (resources.images.hitsplat.loaded) {
+        ctx.drawImage(resources.images.hitsplat.image, 50, 50);
+    }
+
     // Draw the player
     // ctx.fillStyle = player.color;
     // ctx.fillRect(player.x, player.y, 50, 50);
@@ -82,7 +92,7 @@ function gameLoop() {
     for (const id in allPlayers) {
         const otherPlayer = allPlayers[id];
         ctx.fillStyle = otherPlayer.color;
-        ctx.fillRect(otherPlayer.x, otherPlayer.y, 50, 50);
+        ctx.fillRect(otherPlayer.position.x, otherPlayer.position.y, 50, 50);
     }
 
     requestAnimationFrame(gameLoop);

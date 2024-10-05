@@ -31,32 +31,25 @@ wss.on('connection', (ws) => {
     // Handle incoming messages from the client
     ws.on('message', (message) => {
         const data = JSON.parse(message);
-        //console.log("received ws: " + data);
-
         if (data.type === "keydown")
         {
             console.log("keydown received from client: " + data.playerid + " key: " + data.keyevent);
             players[data.playerid].updatePosition(data.keyevent);
             // Send updated position to the server
             broadcastPlayers();
+            return;
         }
 
         if (data.type === "pong") {
             console.log("pong received from client");
             let pongChallange = new PingChallange(data.pong.challangeId, data.pong.initTimestamp, data.pong.pongTimestamp);
             console.log("pong received challange:: " + pongChallange.challangeId + " ping ms: " + pongChallange.calculatePing());
+            return;
         }
-
-        // if (data.type === 'move') {
-        //     // Update player position
-        //     players[newPlayer.id] = { ...players[newPlayer.id], ...data.position };
-
-        //     // Broadcast updated player data to all clients
-        //     broadcastPlayers();
-        // }
 
         if (data.type === "click") {
             console.log("click received from client at x: " + data.x + " y: " + data.y);
+            return;
         }
 
        
@@ -75,12 +68,6 @@ wss.on('connection', (ws) => {
         Object.keys(players).forEach(playerId => {
             players[playerId].webSocket.send(data);
         });
-
-        // wss.clients.forEach(client => {
-        //     if (client.readyState === WebSocket.OPEN) {
-        //         client.send(data);
-        //     }
-        // });
     }
 });
 
