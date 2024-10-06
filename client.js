@@ -105,6 +105,7 @@ function gameLoop() {
     ctx.fillText(`FPS: ${Math.round(fps)}`, 0, 10);
     ctx.fillText(`Players: ${Object.keys(allPlayers).length}`, 0, 30);
     ctx.fillText(`Ping: ${pingMs} ms`, 0, 50);
+    ctx.fillText(`Player position x, y: ${allPlayers[myPlayerId].position.x}, ${allPlayers[myPlayerId].position.y}`, 0, 70);
 }
 
 gameLoop();
