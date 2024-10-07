@@ -1,5 +1,7 @@
 import Player from './player.js';
 import { resources } from './resource.js';
+import { Sprite } from './sprite.js';
+import { Vector } from "./grid.js";
 
 
 const canvas = document.getElementById('gameCanvas');
@@ -20,8 +22,21 @@ canvas.style.height = `${rect.height}px`;
 
 
 let allPlayers = {};
-
 let myPlayerId = 0;
+
+const heartbeat = new Sprite({
+    resource: resources.images.HUD_hb_normal,
+    hFrames: 28,
+    vFrames: 1,
+    frameSize: { width: 28, height: 22 },
+    frame: 0,
+    position: new Vector(50, 50),
+    scale: 1,
+    rotation: 0
+});
+
+
+
 
 
 // Establish a connection to the server
@@ -71,17 +86,49 @@ socket.onmessage = (message) => {
 let fps = 0;
 let lastFrameTime = performance.now();
 
+const bloodSpat = new Sprite({resource: resources.images.hitsplat, 
+    frameSize: {width: 64, height: 64}, 
+    hFrames: 10, vFrames: 1,
+    position: new Vector(0, 0), 
+    frame: 0,
+    scale: 1, rotation: 0});
+
+const walkingLegs = new Sprite({resource: resources.images.legswalking,
+    frameSize: {width: 15, height: 54},
+    hFrames: 16, vFrames: 1,
+    position: new Vector(-10, -20),
+    frame: 0,
+    scale: 10, rotation: 0});    
+
+const playerDead = new Sprite({resource: resources.images.player_dead,
+    frameSize: {width: 80, height: 80},
+    hFrames: 88, vFrames: 1,
+    position: new Vector(0, 0),
+    frame: 0,
+    scale: 1, rotation: 0});
+
 
 function gameLoop() {
+    if (myPlayerId === 0) { 
+        requestAnimationFrame(gameLoop);
+        return;
+    }
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     const background = resources.images.background;
     if (background.loaded) {
         ctx.drawImage(background.image, 0, 0, canvas.width, canvas.height);
     }
+
+    if (!allPlayers[myPlayerId].alive) // player is dead
+    {
+        playerDead.drawImage(ctx, allPlayers[myPlayerId].position.x, allPlayers[myPlayerId].position.y);
+    }
+
     
+
     if (resources.images.hitsplat.loaded) {
-        ctx.drawImage(resources.images.hitsplat.image, 50, 50);
+        bloodSpat.drawImage(ctx, 500, 50);
     }
 
     // Draw the player
@@ -89,11 +136,22 @@ function gameLoop() {
     // ctx.fillRect(player.x, player.y, 50, 50);
 
     // Draw other players
+    //ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (const id in allPlayers) {
+        ctx.beginPath();
         const otherPlayer = allPlayers[id];
         ctx.fillStyle = otherPlayer.color;
-        ctx.fillRect(otherPlayer.position.x, otherPlayer.position.y, 50, 50);
+        ctx.arc(otherPlayer.position.x, otherPlayer.position.y, 10, 10, 0, 2 * Math.PI);
+        
+        ctx.fillStyle = otherPlayer.color;
+        ctx.fill();
+
+        walkingLegs.frame = otherPlayer.currFrame;
+        walkingLegs.drawImage(ctx, otherPlayer.position.x, otherPlayer.position.y);
+        
+        //ctx.fillRect(otherPlayer.position.x, otherPlayer.position.y, 50, 50);
     }
+
 
     requestAnimationFrame(gameLoop);
 
@@ -105,7 +163,9 @@ function gameLoop() {
     ctx.fillText(`FPS: ${Math.round(fps)}`, 0, 10);
     ctx.fillText(`Players: ${Object.keys(allPlayers).length}`, 0, 30);
     ctx.fillText(`Ping: ${pingMs} ms`, 0, 50);
-    ctx.fillText(`Player position x, y: ${allPlayers[myPlayerId].position.x}, ${allPlayers[myPlayerId].position.y}`, 0, 70);
+    ctx.fillText('HP: ' + allPlayers[myPlayerId].hp, 0, 70);
+    ctx.fillText(`Player position x, y: ${allPlayers[myPlayerId].position.x ?? 0}, ${allPlayers[myPlayerId].position.y ?? 0}`, 0, 90);
+    
 }
 
 gameLoop();

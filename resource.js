@@ -5,6 +5,11 @@ class Resources{
         this.toLoad = {
             background: "./sprites/maps/open-space.png",
             hitsplat: "./sprites/glock/glock-hitsplat.png",
+            legswalking: "./sprites/player/legs-walking.png",
+            HUD_hb_normal: "./sprites/player/heartbeat-healthy.png",
+            HUD_hb_impacted : "./sprites/player/heartbeat-impacted.png",
+            HUD_hb_critical: "./sprites/player/heartbeat-critical.png",
+            player_dead : "./sprites/player/death.png",
         };
 
        // this.walls = [new Vector(50, 50), new Vector(910, 50), new Vector(50, 660), new Vector(910, 660)];
