@@ -1,6 +1,6 @@
 const makedeathframes = (rootframe = 0) => {
     return {
-        duration: 4400,
+        duration: 2100,
         frames:
             [
                 { "time": 0, "frame": 0 },
@@ -22,7 +22,7 @@ const makedeathframes = (rootframe = 0) => {
                 { "time": 160, "frame": 16 },
                 { "time": 170, "frame": 17 },
                 { "time": 180, "frame": 18 },
-                { "time": 190, "frame": 19 }, // finish to frame 88
+                { "time": 190, "frame": 19 },
                 { "time": 200, "frame": 20 },
                 { "time": 250, "frame": 21 },
                 { "time": 300, "frame": 22 },
@@ -70,28 +70,10 @@ const makedeathframes = (rootframe = 0) => {
                 { "time": 1960, "frame": 64 },
                 { "time": 1970, "frame": 65 },
                 { "time": 1980, "frame": 66 },
-                { "time":1990, "frame": 67 },
+                { "time": 1990, "frame": 67 },
                 { "time": 2000, "frame": 68 },
                 { "time": 2010, "frame": 69 },
-                { "time": 2020, "frame": 70 },
-                { "time": 2030, "frame": 71 },
-                { "time": 2040, "frame": 72 },
-                { "time": 2050, "frame": 73 },
-                { "time": 2060, "frame": 74 },
-                { "time": 2070, "frame": 75 },
-                { "time": 2080, "frame": 76 },
-                { "time": 2090, "frame": 77 },
-                { "time": 2100, "frame": 78 },
-                { "time": 2110, "frame": 79 },
-                { "time": 2120, "frame": 80 },
-                { "time": 2130, "frame": 81 },
-                { "time": 2140, "frame": 82 },
-                { "time": 2150, "frame": 83 },
-                { "time": 2160, "frame": 84 },
-                { "time": 2170, "frame": 85 },
-                { "time": 2180, "frame": 86 },
-                { "time": 2190, "frame": 87 },
-                { "time": 2200, "frame": 88 }
+                { "time": 2020, "frame": 70 }
             ]
     }
 }

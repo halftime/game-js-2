@@ -126,8 +126,8 @@ const walkingLegs = new Sprite({
 
 const playerDead = new Sprite({
     resource: resources.images.player_dead,
-    frameSize: { width: 80, height: 80 },
-    hFrames: 88, vFrames: 1,
+    frameSize: { width: 110, height: 80 },
+    hFrames: 70, vFrames: 1,
     position: new Vector(0, 0),
     frame: 0,
     scale: 1, rotation: 0,
@@ -136,6 +136,7 @@ const playerDead = new Sprite({
 
 const update = () => {
     // serverside?
+    return;
     const myPlayer = allPlayers[myPlayerId];
     if (myPlayer === undefined) {
         return;
@@ -158,23 +159,20 @@ const draw = () => {
 
     for (const id in allPlayers) {
         const otherPlayer = allPlayers[id];
-
-
-
-        if (otherPlayer.alive === false) {
-            playerDead.step(deltaTime);
-            playerDead.drawImage(ctx, otherPlayer.position.x, otherPlayer.position.y);
-            //deadAnimation.step(deltaTime);
-            //ctx.drawImage(deadAnimation.frame, otherPlayer.position.x, otherPlayer.position.y);
-        }
-        else 
-        if (otherPlayer.alive)
-        {
+   
+        if (otherPlayer.alive || otherPlayer.hp > 0) {
             ctx.beginPath();
             ctx.fillStyle = otherPlayer.color;
             ctx.arc(otherPlayer.position.x, otherPlayer.position.y, 10, 10, 0, 2 * Math.PI);
             walkingLegs.frame = otherPlayer.currPlayerFrame % walkingLegs.hFrames;
             walkingLegs.drawImage(ctx, otherPlayer.position.x, otherPlayer.position.y);
+            ctx.fill();
+            ctx.closePath();
+        }
+        else
+        {
+            playerDead.step(deltaTime);
+            playerDead.drawImage(ctx, otherPlayer.position.x, otherPlayer.position.y);
         }
     }
 
@@ -189,8 +187,6 @@ const draw = () => {
         ctx.fillText('HP: ' + allPlayers[myPlayerId].hp, 0, 70);
         ctx.fillText(`Player position x, y: ${allPlayers[myPlayerId].position.x ?? 0}, ${allPlayers[myPlayerId].position.y ?? 0}`, 0, 90);
     }
-
-    ctx.fill();
 }
 
 let gameLoop = new GameLoop(update, draw);
