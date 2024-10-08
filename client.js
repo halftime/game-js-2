@@ -2,11 +2,15 @@ import Player from './player.js';
 import { resources } from './resource.js';
 import { Sprite } from './sprite.js';
 import { Vector } from "./grid.js";
+import { GameLoop } from './gameloop.js';
+import { FrameIndexPattern } from './FrameIndexPattern.js';
+import { DEADFRAMES } from './animations.js';
 
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d', { alpha: false });
 
+const deadAnimation = new FrameIndexPattern(DEADFRAMES);
 
 const dpr = window.devicePixelRatio;
 const rect = canvas.getBoundingClientRect();
@@ -35,6 +39,17 @@ const heartbeat = new Sprite({
     rotation: 0
 });
 
+const background = new Sprite({
+    resource: resources.images.background,
+    hFrames: 1,
+    vFrames: 1,
+    frameSize: { width: 1010, height: 760 },
+    frame: 0,
+    position: new Vector(0, 0),
+    scale: 1,
+    rotation: 0
+});
+
 
 
 
@@ -56,7 +71,7 @@ canvas.addEventListener('click', (event) => {
 
 // Send player's movement to the server
 document.addEventListener('keydown', (event) => {
-    socket.send(JSON.stringify({ type: 'keydown', keyevent:event.key, playerid : myPlayerId}));
+    socket.send(JSON.stringify({ type: 'keydown', keyevent: event.key, playerid: myPlayerId }));
 });
 
 let pingMs = 0;
@@ -79,93 +94,104 @@ socket.onmessage = (message) => {
     if (data.type === 'updatePlayers') {
         allPlayers = data.players;
     }
+
+    if (data.type === 'playerDead') {
+        console.log("player dead: " + data.playerId);
+        //playerDead.drawAllFrames(ctx, allPlayers[data.playerId].position.x, allPlayers[data.playerId].position.y);
+    }
 };
 
 // Render game loop
 // capture the ctx framerate and display it on the screen
 let fps = 0;
-let lastFrameTime = performance.now();
 
-const bloodSpat = new Sprite({resource: resources.images.hitsplat, 
-    frameSize: {width: 64, height: 64}, 
+
+const bloodSpat = new Sprite({
+    resource: resources.images.hitsplat,
+    frameSize: { width: 64, height: 64 },
     hFrames: 10, vFrames: 1,
-    position: new Vector(0, 0), 
+    position: new Vector(0, 0),
     frame: 0,
-    scale: 1, rotation: 0});
+    scale: 1, rotation: 0
+});
 
-const walkingLegs = new Sprite({resource: resources.images.legswalking,
-    frameSize: {width: 15, height: 54},
-    hFrames: 16, vFrames: 1,
+const walkingLegs = new Sprite({
+    resource: resources.images.legswalking,
+    frameSize: { width: 14, height: 54 },
+    hFrames: 32, vFrames: 1,
     position: new Vector(-10, -20),
     frame: 0,
-    scale: 10, rotation: 0});    
+    scale: 10, rotation: 0
+});
 
-const playerDead = new Sprite({resource: resources.images.player_dead,
-    frameSize: {width: 80, height: 80},
+const playerDead = new Sprite({
+    resource: resources.images.player_dead,
+    frameSize: { width: 80, height: 80 },
     hFrames: 88, vFrames: 1,
     position: new Vector(0, 0),
     frame: 0,
-    scale: 1, rotation: 0});
+    scale: 1, rotation: 0,
+    animationConfig: deadAnimation
+});
 
-
-function gameLoop() {
-    if (myPlayerId === 0) { 
-        requestAnimationFrame(gameLoop);
+const update = () => {
+    // serverside?
+    const myPlayer = allPlayers[myPlayerId];
+    if (myPlayer === undefined) {
         return;
     }
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const background = resources.images.background;
-    if (background.loaded) {
-        ctx.drawImage(background.image, 0, 0, canvas.width, canvas.height);
-    }
-
-    if (!allPlayers[myPlayerId].alive) // player is dead
-    {
-        playerDead.drawImage(ctx, allPlayers[myPlayerId].position.x, allPlayers[myPlayerId].position.y);
-    }
-
-    
-
-    if (resources.images.hitsplat.loaded) {
-        bloodSpat.drawImage(ctx, 500, 50);
-    }
-
-    // Draw the player
-    // ctx.fillStyle = player.color;
-    // ctx.fillRect(player.x, player.y, 50, 50);
-
-    // Draw other players
-    //ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (const id in allPlayers) {
-        ctx.beginPath();
-        const otherPlayer = allPlayers[id];
-        ctx.fillStyle = otherPlayer.color;
-        ctx.arc(otherPlayer.position.x, otherPlayer.position.y, 10, 10, 0, 2 * Math.PI);
-        
-        ctx.fillStyle = otherPlayer.color;
-        ctx.fill();
-
-        walkingLegs.frame = otherPlayer.currFrame;
-        walkingLegs.drawImage(ctx, otherPlayer.position.x, otherPlayer.position.y);
-        
-        //ctx.fillRect(otherPlayer.position.x, otherPlayer.position.y, 50, 50);
-    }
+    //myPlayer.currPlayerFrame += 1;
+}
 
 
-    requestAnimationFrame(gameLoop);
 
+
+let lastFrameTime = performance.now();    
+
+const draw = () => {
     const currentTime = performance.now();
     const deltaTime = currentTime - lastFrameTime;
     lastFrameTime = currentTime;
+
+    background.drawImage(ctx, 0, 0);
+    
+
+    for (const id in allPlayers) {
+        const otherPlayer = allPlayers[id];
+
+
+
+        if (otherPlayer.alive === false) {
+            playerDead.step(deltaTime);
+            playerDead.drawImage(ctx, otherPlayer.position.x, otherPlayer.position.y);
+            //deadAnimation.step(deltaTime);
+            //ctx.drawImage(deadAnimation.frame, otherPlayer.position.x, otherPlayer.position.y);
+        }
+        else 
+        if (otherPlayer.alive)
+        {
+            ctx.beginPath();
+            ctx.fillStyle = otherPlayer.color;
+            ctx.arc(otherPlayer.position.x, otherPlayer.position.y, 10, 10, 0, 2 * Math.PI);
+            walkingLegs.frame = otherPlayer.currPlayerFrame % walkingLegs.hFrames;
+            walkingLegs.drawImage(ctx, otherPlayer.position.x, otherPlayer.position.y);
+        }
+    }
+
+    
     fps = 1 / (deltaTime / 1000); // from ms to seconds
     ctx.fillStyle = 'red';
     ctx.fillText(`FPS: ${Math.round(fps)}`, 0, 10);
     ctx.fillText(`Players: ${Object.keys(allPlayers).length}`, 0, 30);
     ctx.fillText(`Ping: ${pingMs} ms`, 0, 50);
-    ctx.fillText('HP: ' + allPlayers[myPlayerId].hp, 0, 70);
-    ctx.fillText(`Player position x, y: ${allPlayers[myPlayerId].position.x ?? 0}, ${allPlayers[myPlayerId].position.y ?? 0}`, 0, 90);
-    
+
+    if (allPlayers[myPlayerId] !== undefined) {
+        ctx.fillText('HP: ' + allPlayers[myPlayerId].hp, 0, 70);
+        ctx.fillText(`Player position x, y: ${allPlayers[myPlayerId].position.x ?? 0}, ${allPlayers[myPlayerId].position.y ?? 0}`, 0, 90);
+    }
+
+    ctx.fill();
 }
 
-gameLoop();
+let gameLoop = new GameLoop(update, draw);
+gameLoop.start();

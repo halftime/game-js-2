@@ -9,7 +9,8 @@ export class Sprite {
         frame,
         position,
         scale,
-        rotation
+        rotation,
+        animationConfig,
     })
     {
         this.resource = resource; // image resource
@@ -21,7 +22,7 @@ export class Sprite {
         this.position = position ?? new Vector(0, 0);
         this.scale = scale = 1;
         this.rotation = rotation = 0;
-
+        this.animations = animationConfig ?? null;
         this.buildFrameMap();
     }
 
@@ -37,6 +38,22 @@ export class Sprite {
                 );
                 frameCount++;
             }
+        }
+    }
+
+    step(deltaTime)
+    {
+        if (!this.animations) { return; }
+        this.animations.step(deltaTime);
+        this.frame = this.animations.frame;
+    }
+
+    drawAllFrames(ctx, x, y)
+    {
+        for (let i = 0; i < this.hFrames * this.vFrames; i++)
+        {
+            this.frame = i;
+            this.drawImage(ctx, x, y);
         }
     }
 
@@ -64,7 +81,7 @@ export class Sprite {
             frameSizeX, frameSizeY,
             x + this.position.x, y + this.position.y, // position adjusted by sprite position
             frameSizeX * this.scale, 
-            frameSizeY * this.scale
+            frameSizeY * this.scale,
         );
         // ctx.save();
         // ctx.translate(this.position.x, this.position.y);

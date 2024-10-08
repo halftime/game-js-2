@@ -17,25 +17,29 @@ export default class Player {
         // this.x = 200;
         // this.y = 200;
         this.position = new Vector(200, 200);
+        this._prevPosition = new Vector(0, 0);
         this.color = color;
         this.ping = 0;
         this.fps = 0;
-        this.currFrame = 0;
+        this.currPlayerFrame = 0;
+
+        this.currentFrameCount = 0;
+        this.previousFrameTime = Date.now();
 
 
         this.latestKeyTimeMs = Date.now(); // to prevent key spamming
         this.latestClickTimeMs = Date.now(); // to prevent click spamming
+
+        this.wasAlive = true;
     }
 
     updatePosition(keyEvent)
     {
         const pixelConst = 5;
-
         const currentTime = Date.now();
         if (currentTime - this.latestKeyTimeMs < 10) return;
         console.log("keyEvent: " + keyEvent);
         if (keyEvent === 'Enter') this.takeDamage(55);
-
         if (keyEvent === 'ArrowUp') this.position.y -= 5;
         if (keyEvent === 'ArrowDown') this.position.y += 5;
         if (keyEvent === 'ArrowLeft') this.position.x -= 5;
@@ -50,7 +54,12 @@ export default class Player {
         if (this.position.y < walls_range_y[0]) this.position.y += 5;
 
         this.latestKeyTimeMs = currentTime;
-        this.currFrame = (this.currFrame + 1) //% 64; // shouldnt be an issue, prevent overflow of frame count
+        if (this.position.x !== this._prevPosition.x || this.position.y !== this._prevPosition.y)
+        {
+            this._prevPosition = new Vector(this.position.x, this.position.y);
+           // this.currPlayerFrame = (this.currPlayerFrame + 1) % 32; // shouldnt be an issue, prevent overflow of frame count
+            console.log("player position updated: " + this.position.x + ", " + this.position.y);
+        }
     }
 
     takeDamage(damage)

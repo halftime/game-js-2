@@ -1,4 +1,4 @@
-import  Player from './player.js';
+import Player from './player.js';
 // import WebSocket from 'ws';
 import { WebSocketServer } from 'ws';
 
@@ -6,7 +6,7 @@ import { WebSocketServer } from 'ws';
 
 // create new websocket server
 // ts WebSocketServer
-const wss = new WebSocketServer({port: 3000}); //WebSocket.Server({ port: 3000 });
+const wss = new WebSocketServer({ port: 3000 }); //WebSocket.Server({ port: 3000 });
 
 
 // player object class holding player id, hitpoints, positions, color, ping
@@ -20,7 +20,7 @@ wss.on('connection', (ws) => {
     ws.id = randomPlayerId; // assign player id to ws object
     const newPlayer = new Player(randomPlayerId, ws);
 
-    
+    //players.set(randomPlayerId, newPlayer);
     players[newPlayer.id] = newPlayer;
 
     console.log("new player connected: " + newPlayer.id);
@@ -31,12 +31,11 @@ wss.on('connection', (ws) => {
     // Handle incoming messages from the client
     ws.on('message', (message) => {
         const data = JSON.parse(message);
-        if (data.type === "keydown")
-        {
+        if (data.type === "keydown") {
             console.log("keydown received from client: " + data.playerid + " key: " + data.keyevent);
             players[data.playerid].updatePosition(data.keyevent);
             // Send updated position to the server
-            broadcastPlayers();
+            //broadcastPlayers();
             return;
         }
 
@@ -52,24 +51,64 @@ wss.on('connection', (ws) => {
             return;
         }
 
-       
+
     });
 
     // Remove the player when they disconnect
     ws.on('close', () => {
         console.log("player disconnected: " + ws.id);
         delete players[ws.id];
-        broadcastPlayers();
+        //broadcastPlayers();
     });
 
     // Function to send updated players list to all clients
-    function broadcastPlayers() {
-        const data = JSON.stringify({ type: 'updatePlayers', players });
-        Object.keys(players).forEach(playerId => {
-            players[playerId].webSocket.send(data);
-        });
-    }
+
 });
+
+// use setinterval to calculate server 60 hz tickrate and update clients framecount 
+
+
+function broadcastPlayers() { // hardwire broadcast to server tick interval? 
+    const newFrameTime = Date.now();
+    const data = JSON.stringify({ type: 'updatePlayers', players });
+
+    Object.keys(players).forEach(playerId => {
+        let currentPlayer = players[playerId];
+        if (currentPlayer.hp <= 0) {
+            players[playerId].alive = false;
+        }
+    });
+
+    Object.keys(players).forEach(playerId => {
+        players[playerId].webSocket.send(data);
+    });
+}
+
+const targetInterval = 1000 / 60; // 60 tick
+
+let lastTickTime = performance.now();
+
+function ServerTickLoop(){
+    const now = performance.now();
+
+    const deltaTime = now - lastTickTime;
+    lastTickTime = now;
+
+    // do server tick logic here
+    Object.keys(players).forEach(playerId => {
+        players[playerId].currPlayerFrame += 1;
+    });
+    broadcastPlayers();
+
+
+    //
+    const timeTaken = performance.now() - lastTickTime;
+    const adjInterval = (targetInterval - timeTaken) < 0 ? 0 : targetInterval - timeTaken;
+
+    setTimeout(ServerTickLoop, adjInterval);
+}
+
+// use setinterval to calculate server 60 hz tickrate and update clients framecount 
 
 // setInterval(() => {
 //     let myPingChallange = new PingChallange(challangeId = Math.round(Math.random() * 99999999), initTimestamp = Date.now());
@@ -78,3 +117,5 @@ wss.on('connection', (ws) => {
 // }, 10000);
 
 console.log('Server is running on ws://localhost:3000');
+
+ServerTickLoop();

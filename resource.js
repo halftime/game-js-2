@@ -27,9 +27,6 @@ class Resources{
                 this.images[key].loaded = true;
             };
         });
-
-
-        
     }
 }
 
