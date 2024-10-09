@@ -1,5 +1,6 @@
 import { Vector } from "./grid.js";
 //import { resources } from "./resource.js";
+import { serverResource } from "./server-resource.js";
 
 export default class Player {
     constructor(playerId, webSocket, color = Player.getRandomColor())
@@ -39,19 +40,33 @@ export default class Player {
         const currentTime = Date.now();
         if (currentTime - this.latestKeyTimeMs < 10) return;
         console.log("keyEvent: " + keyEvent);
+
+        let proposedPosition = new Vector(this.position.x, this.position.y);
+
+
         if (keyEvent === 'Enter') this.takeDamage(55);
-        if (keyEvent === 'ArrowUp') this.position.y -= 5;
-        if (keyEvent === 'ArrowDown') this.position.y += 5;
-        if (keyEvent === 'ArrowLeft') this.position.x -= 5;
-        if (keyEvent === 'ArrowRight') this.position.x += 5;
+        if (keyEvent === 'ArrowUp') proposedPosition.y -= 5;
+        if (keyEvent === 'ArrowDown') proposedPosition.y += 5;
+        if (keyEvent === 'ArrowLeft') proposedPosition.x -= 5;
+        if (keyEvent === 'ArrowRight') proposedPosition.x += 5;
 
-        const walls_range_x = [50, 910];
-        const walls_range_y = [50, 660];
+        if (!serverResource.isWallCollision(proposedPosition))
+        {
+            console.log("no wall collision detected: " + proposedPosition.x + " , " + proposedPosition.y);
+            this.position = proposedPosition;
+        }
+        else
+        {
+            console.log("wall collision detected");
+        }
 
-        if (this.position.x > walls_range_x[1]) this.position.x -= 5;
-        if (this.position.x < walls_range_x[0]) this.position.x += 5;
-        if (this.position.y > walls_range_y[1]) this.position.y -= 5;
-        if (this.position.y < walls_range_y[0]) this.position.y += 5;
+        // const walls_range_x = [50, 910];
+        // const walls_range_y = [50, 660];
+
+        // if (this.position.x > walls_range_x[1]) this.position.x -= 5;
+        // if (this.position.x < walls_range_x[0]) this.position.x += 5;
+        // if (this.position.y > walls_range_y[1]) this.position.y -= 5;
+        // if (this.position.y < walls_range_y[0]) this.position.y += 5;
 
         this.latestKeyTimeMs = currentTime;
         if (this.position.x !== this._prevPosition.x || this.position.y !== this._prevPosition.y)

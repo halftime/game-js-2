@@ -1,7 +1,7 @@
 import Player from './player.js';
 // import WebSocket from 'ws';
 import { WebSocketServer } from 'ws';
-
+import { serverResource } from './server-resource.js';
 
 
 // create new websocket server
@@ -104,7 +104,7 @@ function ServerTickLoop() {
     const timeToNextTick = nextTickTime - currentTime;
 
     // Log tick rate every second (60 ticks)
-    if (serverTickCounter % 60 === 0) {
+    if (serverTickCounter % 300 === 0) {
         const avgtickrate = serverTickCounter / (performance.now() - initialTime) * 1000;
         console.log("Server tickcount: " + serverTickCounter + " avg tickrate: " + avgtickrate);
     }

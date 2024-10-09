@@ -4,6 +4,8 @@ class Resources{
     constructor(){
         this.toLoad = {
             background: "./sprites/maps/open-space.png",
+            mapXgenStudio: "./sprites/maps/xgen_studio-map.png",
+
             hitsplat: "./sprites/glock/glock-hitsplat.png",
             legswalking: "./sprites/player/legs-walking.png",
             HUD_hb_normal: "./sprites/player/heartbeat-healthy.png",

@@ -40,10 +40,10 @@ const heartbeat = new Sprite({
 });
 
 const background = new Sprite({
-    resource: resources.images.background,
+    resource: resources.images.mapXgenStudio,
     hFrames: 1,
     vFrames: 1,
-    frameSize: { width: 1010, height: 760 },
+    frameSize: { width: 1151, height: 791 },
     frame: 0,
     position: new Vector(0, 0),
     scale: 1,
