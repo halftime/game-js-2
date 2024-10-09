@@ -84,29 +84,43 @@ function broadcastPlayers() { // hardwire broadcast to server tick interval?
     });
 }
 
-const targetInterval = 1000 / 60; // 60 tick
 
-let lastTickTime = performance.now();
+const targetInterval = 1000 / 60; // 60 ticks per second
+const initialTime = performance.now();
+let serverTickCounter = 0;
+let nextTickTime = initialTime + targetInterval;
 
-function ServerTickLoop(){
-    const now = performance.now();
+function ServerTickLoop() {
+    const currentTime = performance.now();
+    serverTickCounter += 1;
 
-    const deltaTime = now - lastTickTime;
-    lastTickTime = now;
-
-    // do server tick logic here
+    // Do server tick logic here
     Object.keys(players).forEach(playerId => {
         players[playerId].currPlayerFrame += 1;
     });
     broadcastPlayers();
 
+    // Calculate the time we should wait until the next tick
+    const timeToNextTick = nextTickTime - currentTime;
 
-    //
-    const timeTaken = performance.now() - lastTickTime;
-    const adjInterval = (targetInterval - timeTaken) < 0 ? 0 : targetInterval - timeTaken;
+    // Log tick rate every second (60 ticks)
+    if (serverTickCounter % 60 === 0) {
+        const avgtickrate = serverTickCounter / (performance.now() - initialTime) * 1000;
+        console.log("Server tickcount: " + serverTickCounter + " avg tickrate: " + avgtickrate);
+    }
 
-    setTimeout(ServerTickLoop, adjInterval);
+    // Ensure we don't go negative on the interval
+    const waitTime = timeToNextTick < 0 ? 0 : timeToNextTick;
+
+    // Update next expected tick time
+    nextTickTime += targetInterval;
+
+    // Use setTimeout for the next tick
+    setTimeout(ServerTickLoop, waitTime);
 }
+
+// Start the loop
+ServerTickLoop();
 
 // use setinterval to calculate server 60 hz tickrate and update clients framecount 
 

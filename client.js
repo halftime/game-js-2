@@ -126,8 +126,8 @@ const walkingLegs = new Sprite({
 
 const playerDead = new Sprite({
     resource: resources.images.player_dead,
-    frameSize: { width: 110, height: 80 },
-    hFrames: 70, vFrames: 1,
+    frameSize: { width: 110, height: 80 }, // 110 x 80
+    hFrames: 75, vFrames: 1,
     position: new Vector(0, 0),
     frame: 0,
     scale: 1, rotation: 0,
