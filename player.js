@@ -72,23 +72,23 @@ export default class Player extends gameobject{
         return color[Math.floor(Math.random() * color.length)];
     }
 
-    step(delta, root)
-    {
-        //if (this.alive) this.updatePosition();
-        if (this.alive !== this.wasAlive)
-        {
-            this.wasAlive = this.alive;
-            if (!this.alive) root.removechild(this);
-        }
-    }
+    // step(delta, root)
+    // {
+    //     //if (this.alive) this.updatePosition();
+    //     if (this.alive !== this.wasAlive)
+    //     {
+    //         this.wasAlive = this.alive;
+    //         if (!this.alive) root.removechild(this);
+    //     }
+    // }
 
-    draw(ctx, x, y)
+    drawImage(ctx, x, y)
     {
-        ctx.beginPath();
+         ctx.beginPath();
         ctx.fillStyle = this.color;
-        ctx.arc(x, y, 10, 10, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.closePath();
+        ctx.arc(this.position.x, this.position.y, 10, 10, 0, 2 * Math.PI);
+         ctx.fill();
+         ctx.closePath();
     }
 
 

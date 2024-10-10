@@ -6,23 +6,20 @@ import { GameLoop } from './gameloop.js';
 import { FrameIndexPattern } from './FrameIndexPattern.js';
 import { DEADFRAMES, HEARTBEATOKFRAMES } from './animations.js';
 import { gameobject } from './GameObject.js';
+import { heartbeatSprite, walkingLegsSprite, backgroundSprite } from './sprites.js';
 
 
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d', { alpha: false });
-
-const deadAnimation = new FrameIndexPattern(DEADFRAMES);
-const heartBeatAnimation = new FrameIndexPattern(HEARTBEATOKFRAMES);
-
 const dpr = window.devicePixelRatio;
+ctx.scale(dpr, dpr);
 const rect = canvas.getBoundingClientRect();
+
+
 
 canvas.width = rect.width * dpr;
 canvas.height = rect.height * dpr;
 
-ctx.scale(dpr, dpr);
-
-// Set the "drawn" size of the canvas
 canvas.style.width = `${rect.width}px`;
 canvas.style.height = `${rect.height}px`;
 
@@ -32,31 +29,9 @@ let myPlayerId = 0;
 const mainScene = new gameobject({ });
 
 
-const heartbeat = new Sprite({
-    resource: resources.images.HUD_hb_normal,
-    hFrames: 28,
-    vFrames: 1,
-    frameSize: { width: 26, height: 22 },
-    frame: 0,
-    position: new Vector(10, 10),
-    scale: 1,
-    rotation: 0,
-    animationConfig: heartBeatAnimation
-});
 
-const background = new Sprite({
-    resource: resources.images.mapXgenStudio,
-    hFrames: 1,
-    vFrames: 1,
-    frameSize: { width: 1151, height: 791 },
-    frame: 0,
-    position: new Vector(0, 0),
-    scale: 2,
-    rotation: 0
-});
-
-mainScene.addChild(background);
-mainScene.addChild(heartbeat);
+mainScene.addChild(backgroundSprite);
+mainScene.addChild(heartbeatSprite);
 
 
 
@@ -156,28 +131,12 @@ const bloodSpat = new Sprite({
     scale: 1, rotation: 0
 });
 
-const walkingLegs = new Sprite({
-    resource: resources.images.legswalking,
-    frameSize: { width: 14, height: 54 },
-    hFrames: 32, vFrames: 1,
-    position: new Vector(-10, -20),
-    frame: 0,
-    scale: 10, rotation: 0
-});
-
-const playerDead = new Sprite({
-    resource: resources.images.player_dead,
-    frameSize: { width: 110, height: 80 }, // 110 x 80
-    hFrames: 75, vFrames: 1,
-    position: new Vector(0, 0),
-    frame: 0,
-    scale: 1, rotation: 0,
-    animationConfig: deadAnimation
-});
-
 const update = (delta) => {
     ///console.log("update delta: " + delta);
-    mainScene.stepEntry(delta, mainScene);
+    mainScene.step(delta, mainScene);
+    for (const id in allPlayers) {
+        allPlayers[id].step(delta);
+    }
 }
 
 
@@ -195,17 +154,9 @@ const draw = () => {
     mainScene.draw(ctx, 0, 0);
     for (const id in allPlayers) {
         let otherPlayer = allPlayers[id];
+        otherPlayer.addChild(walkingLegsSprite);
+        console.log("otherPlayer: " + otherPlayer.children.length);
         otherPlayer.draw(ctx, otherPlayer.position.x, otherPlayer.position.y);
-        otherPlayer.addChild(walkingLegs);
-
-        //ctx.beginPath();
-        //ctx.fillStyle = otherPlayer.color;
-        //ctx.arc(otherPlayer.position.x, otherPlayer.position.y, 10, 10, 0, 2 * Math.PI);
-        //walkingLegs.frame = otherPlayer.currPlayerFrame % walkingLegs.hFrames;
-        //walkingLegs.drawImage(ctx, otherPlayer.position.x, otherPlayer.position.y);
-        //ctx.fill();
-        //ctx.closePath();
-        //mainScene.addChild(otherPlayer);
     }
 
     console.log(mainScene.children.length);

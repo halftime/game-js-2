@@ -26,12 +26,13 @@ export class gameobject {
     }
 
     draw(ctx, x, y) {
-        const drawPosX = x + this.position.x; //+ this.drawOffset.x
-        const drawPosY = y + this.position.y; //+ this.drawOffset.y;
-        this.drawImage(ctx, drawPosX, drawPosY);
+        const drawPosX = x; //+ this.position.x; //+ this.drawOffset.x
+        const drawPosY = y; //+ this.position.y; //+ this.drawOffset.y;
+        
         this.children.forEach(child => {
             child.draw(ctx, drawPosX, drawPosY);
         });
+        this.drawImage(ctx, drawPosX, drawPosY);
     }
 
     drawImage(ctx, drawPosX, drewPosY) { // override

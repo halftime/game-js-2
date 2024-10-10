@@ -22,7 +22,7 @@ export class Sprite extends gameobject{
         this.frame = frame;
         this.frameMap = new Map();
         this.position = position ?? new Vector(0, 0);
-        this.scale = scale = 1;
+        this.scale = scale ?? 1;
         this.rotation = rotation = 0;
         this.animations = animationConfig ?? null;
         this.buildFrameMap();

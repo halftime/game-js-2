@@ -79,18 +79,46 @@ const makedeathframes = (rootframe = 0) => {
 }
 
 const makeHeartBeatOkFrames = (rootframe = 0) => {
-    return{
-        duration: 1000,
-        frames:
-        [
-            { "time": 0, "frame": 0 },
-            { "time": 250, "frame": 1 },
-            { "time": 500, "frame": 2 },
-            { "time": 750, "frame": 3 },
-            { "time": 1000, "frame": 4 }
-        ]
+    const totalFrames = 28;
+    const duration = 1000;
+    const frameTime = duration / totalFrames;
+    
+    let frames = [];
+    
+    for (let i = 0; i < totalFrames; i++) {
+        frames.push({
+            "time": Math.round(i * frameTime),
+            "frame": rootframe + i
+        });
     }
+
+    return {
+        duration: duration,
+        frames: frames
+    };
+};
+
+const makeLegFrames = (rootframe = 0) => {
+    const totalFrames = 32;
+    const duration = 2000;
+    const frameTime = duration / totalFrames;
+    
+    let frames = [];
+    
+    for (let i = 0; i < totalFrames; i++) {
+        frames.push({
+            "time": Math.round(i * frameTime),
+            "frame": rootframe + i
+        });
+    }
+
+    return {
+        duration: duration,
+        frames: frames
+    };
 }
+
 
 export const DEADFRAMES = makedeathframes(0);
 export const HEARTBEATOKFRAMES = makeHeartBeatOkFrames(0);
+export const LEGFRAMES = makeLegFrames(0);
