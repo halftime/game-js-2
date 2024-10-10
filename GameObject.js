@@ -14,12 +14,15 @@ export class gameobject {
 
     stepEntry(delta, root) {
         this.children.forEach(child => {
-            //child.stepEntry(delta, root);
+            child.stepEntry(delta, root);
         });
         this.step(delta);
     }
 
     step(_delta) { // override
+        this.children.forEach(c => {
+            c.step(_delta);
+        });
     }
 
     draw(ctx, x, y) {

@@ -86,10 +86,9 @@ export default class Player extends gameobject{
     {
         ctx.beginPath();
         ctx.fillStyle = this.color;
-        //ctx.arc(x, y, 10, 10, 0, 2 * Math.PI);
         ctx.arc(x, y, 10, 10, 0, 2 * Math.PI);
-        ctx.closePath();
         ctx.fill();
+        ctx.closePath();
     }
 
 

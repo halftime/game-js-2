@@ -4,7 +4,7 @@ import { Sprite } from './sprite.js';
 import { Vector } from "./grid.js";
 import { GameLoop } from './gameloop.js';
 import { FrameIndexPattern } from './FrameIndexPattern.js';
-import { DEADFRAMES } from './animations.js';
+import { DEADFRAMES, HEARTBEATOKFRAMES } from './animations.js';
 import { gameobject } from './GameObject.js';
 
 
@@ -12,6 +12,7 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d', { alpha: false });
 
 const deadAnimation = new FrameIndexPattern(DEADFRAMES);
+const heartBeatAnimation = new FrameIndexPattern(HEARTBEATOKFRAMES);
 
 const dpr = window.devicePixelRatio;
 const rect = canvas.getBoundingClientRect();
@@ -35,11 +36,12 @@ const heartbeat = new Sprite({
     resource: resources.images.HUD_hb_normal,
     hFrames: 28,
     vFrames: 1,
-    frameSize: { width: 28, height: 22 },
+    frameSize: { width: 26, height: 22 },
     frame: 0,
     position: new Vector(10, 10),
     scale: 1,
-    rotation: 0
+    rotation: 0,
+    animationConfig: heartBeatAnimation
 });
 
 const background = new Sprite({
@@ -109,7 +111,7 @@ socket.onmessage = (message) => {
     }
 
     if (data.type === 'updatePlayers') {
-        console.log("updatePlayers: " + JSON.stringify(data.players));
+        //console.log("updatePlayers: " + JSON.stringify(data.players));
         for (const id in data.players) {
             if (allPlayers[id] !== undefined) {
                 allPlayers[id].position = new Vector(data.players[id].position.x, data.players[id].position.y);
@@ -174,6 +176,7 @@ const playerDead = new Sprite({
 });
 
 const update = (delta) => {
+    ///console.log("update delta: " + delta);
     mainScene.stepEntry(delta, mainScene);
 }
 
@@ -192,13 +195,16 @@ const draw = () => {
     mainScene.draw(ctx, 0, 0);
     for (const id in allPlayers) {
         let otherPlayer = allPlayers[id];
-        ctx.beginPath();
-        ctx.fillStyle = otherPlayer.color;
-        ctx.arc(otherPlayer.position.x, otherPlayer.position.y, 10, 10, 0, 2 * Math.PI);
-        walkingLegs.frame = otherPlayer.currPlayerFrame % walkingLegs.hFrames;
-        walkingLegs.drawImage(ctx, otherPlayer.position.x, otherPlayer.position.y);
-        ctx.fill();
-        ctx.closePath();
+        otherPlayer.draw(ctx, otherPlayer.position.x, otherPlayer.position.y);
+        otherPlayer.addChild(walkingLegs);
+
+        //ctx.beginPath();
+        //ctx.fillStyle = otherPlayer.color;
+        //ctx.arc(otherPlayer.position.x, otherPlayer.position.y, 10, 10, 0, 2 * Math.PI);
+        //walkingLegs.frame = otherPlayer.currPlayerFrame % walkingLegs.hFrames;
+        //walkingLegs.drawImage(ctx, otherPlayer.position.x, otherPlayer.position.y);
+        //ctx.fill();
+        //ctx.closePath();
         //mainScene.addChild(otherPlayer);
     }
 

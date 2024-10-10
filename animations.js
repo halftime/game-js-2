@@ -78,4 +78,19 @@ const makedeathframes = (rootframe = 0) => {
     }
 }
 
+const makeHeartBeatOkFrames = (rootframe = 0) => {
+    return{
+        duration: 1000,
+        frames:
+        [
+            { "time": 0, "frame": 0 },
+            { "time": 250, "frame": 1 },
+            { "time": 500, "frame": 2 },
+            { "time": 750, "frame": 3 },
+            { "time": 1000, "frame": 4 }
+        ]
+    }
+}
+
 export const DEADFRAMES = makedeathframes(0);
+export const HEARTBEATOKFRAMES = makeHeartBeatOkFrames(0);

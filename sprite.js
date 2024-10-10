@@ -50,15 +50,6 @@ export class Sprite extends gameobject{
         this.frame = this.animations.frame;
     }
 
-    drawAllFrames(ctx, x, y)
-    {
-        for (let i = 0; i < this.hFrames * this.vFrames; i++)
-        {
-            this.frame = i;
-            this.drawImage(ctx, x, y);
-        }
-    }
-
     drawImage(ctx, x, y)
     {
         if (!this.resource.loaded) { return; }
