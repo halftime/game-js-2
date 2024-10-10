@@ -1,23 +1,23 @@
 import { Vector } from "./grid.js";
 //import { resources } from "./resource.js";
 import { serverResource } from "./server-resource.js";
+import { gameobject } from './GameObject.js';
 
-export default class Player {
-    constructor(playerId, webSocket, color = Player.getRandomColor())
+export default class Player extends gameobject{
+    constructor(playerId, websocket = null, x, y, color = "black")
     {
+        super ({ position: new Vector(x, y) });
         this.id = playerId;
 
-        Object.defineProperty(this, 'webSocket', {
-            value: webSocket,
+        Object.defineProperty(this, 'websocket', {
+            value: websocket,
             writable: true,  // You can modify it later
             enumerable: false // Exclude it from JSON.stringify
         });
 
         this.hp = 100;
         this.alive = true;
-        // this.x = 200;
-        // this.y = 200;
-        this.position = new Vector(200, 200);
+        //this.position = new Vector(x, y);
         this._prevPosition = new Vector(0, 0);
         this.color = color;
         this.ping = 0;
@@ -34,12 +34,9 @@ export default class Player {
         this.wasAlive = true;
     }
 
-    updatePosition(keyEvent)
+    updatePosition(keyEvent) // return true if position was updated
     {
-        const pixelConst = 5;
-        const currentTime = Date.now();
-        if (currentTime - this.latestKeyTimeMs < 10) return;
-        console.log("keyEvent: " + keyEvent);
+        //console.log("keyEvent: " + keyEvent);
 
         let proposedPosition = new Vector(this.position.x, this.position.y);
 
@@ -52,29 +49,10 @@ export default class Player {
 
         if (!serverResource.isWallCollision(proposedPosition))
         {
-            console.log("no wall collision detected: " + proposedPosition.x + " , " + proposedPosition.y);
-            this.position = proposedPosition;
+            this.position.setXY(proposedPosition.x, proposedPosition.y);
+            return true;
         }
-        else
-        {
-            console.log("wall collision detected");
-        }
-
-        // const walls_range_x = [50, 910];
-        // const walls_range_y = [50, 660];
-
-        // if (this.position.x > walls_range_x[1]) this.position.x -= 5;
-        // if (this.position.x < walls_range_x[0]) this.position.x += 5;
-        // if (this.position.y > walls_range_y[1]) this.position.y -= 5;
-        // if (this.position.y < walls_range_y[0]) this.position.y += 5;
-
-        this.latestKeyTimeMs = currentTime;
-        if (this.position.x !== this._prevPosition.x || this.position.y !== this._prevPosition.y)
-        {
-            this._prevPosition = new Vector(this.position.x, this.position.y);
-           // this.currPlayerFrame = (this.currPlayerFrame + 1) % 32; // shouldnt be an issue, prevent overflow of frame count
-            console.log("player position updated: " + this.position.x + ", " + this.position.y);
-        }
+        return false;
     }
 
     takeDamage(damage)
@@ -92,6 +70,26 @@ export default class Player {
     {
         const color = ['red', 'green', 'blue', 'yellow', 'purple', 'orange', 'pink', 'brown', 'white'];
         return color[Math.floor(Math.random() * color.length)];
+    }
+
+    step(delta, root)
+    {
+        //if (this.alive) this.updatePosition();
+        if (this.alive !== this.wasAlive)
+        {
+            this.wasAlive = this.alive;
+            if (!this.alive) root.removechild(this);
+        }
+    }
+
+    draw(ctx, x, y)
+    {
+        ctx.beginPath();
+        ctx.fillStyle = this.color;
+        //ctx.arc(x, y, 10, 10, 0, 2 * Math.PI);
+        ctx.arc(x, y, 10, 10, 0, 2 * Math.PI);
+        ctx.closePath();
+        ctx.fill();
     }
 
 

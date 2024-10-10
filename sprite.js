@@ -1,6 +1,7 @@
 import { Vector } from "./grid.js";
+import { gameobject } from './GameObject.js';
 
-export class Sprite {
+export class Sprite extends gameobject{
     constructor({
         resource,
         frameSize,
@@ -13,6 +14,7 @@ export class Sprite {
         animationConfig,
     })
     {
+        super({ });
         this.resource = resource; // image resource
         this.frameSize = frameSize; // sprite frame size
         this.hFrames = hFrames ?? 1; // sprite horizontal frames
@@ -74,14 +76,14 @@ export class Sprite {
 
         const frameSizeX = this.frameSize.width;
         const frameSizeY = this.frameSize.height;
-        
+
         ctx.drawImage(
             this.resource.image,
             frameCoordX, frameCoordY, // crop sprite
             frameSizeX, frameSizeY,
             x + this.position.x, y + this.position.y, // position adjusted by sprite position
             frameSizeX * this.scale, 
-            frameSizeY * this.scale,
+            frameSizeY * this.scale
         );
         // ctx.save();
         // ctx.translate(this.position.x, this.position.y);

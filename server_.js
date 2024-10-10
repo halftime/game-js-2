@@ -18,22 +18,30 @@ wss.on('connection', (ws) => {
     const randomPlayerId = Math.round(Math.random() * 999999);
 
     ws.id = randomPlayerId; // assign player id to ws object
-    const newPlayer = new Player(randomPlayerId, ws);
+    let newPlayer = new Player(randomPlayerId, ws, 200, 200, Player.getRandomColor());
+    
 
     //players.set(randomPlayerId, newPlayer);
     players[newPlayer.id] = newPlayer;
 
     console.log("new player connected: " + newPlayer.id);
 
-    ws.send(JSON.stringify({ type: 'playerid', playerId: newPlayer.id }));
-    ws.send(JSON.stringify({ type: 'updatePlayers', players }));
+    ws.send(JSON.stringify({ type: 'newPlayer', playerObj: newPlayer }));
+
+    broadcastPlayers();
+    //ws.send(JSON.stringify({ type: 'updatePlayers', players }));
 
     // Handle incoming messages from the client
     ws.on('message', (message) => {
         const data = JSON.parse(message);
+        //if (data.playerid === undefined) return;
         if (data.type === "keydown") {
+            if (players[data.playerid] === undefined) return;  
             console.log("keydown received from client: " + data.playerid + " key: " + data.keyevent);
-            players[data.playerid].updatePosition(data.keyevent);
+
+            if (players[data.playerid].updatePosition(data.keyevent)) {
+                console.log(">>> player position: " + players[data.playerid].position.x + " , " + players[data.playerid].position.y);
+            }
             // Send updated position to the server
             //broadcastPlayers();
             return;
@@ -72,15 +80,16 @@ function broadcastPlayers() { // hardwire broadcast to server tick interval?
     const newFrameTime = Date.now();
     const data = JSON.stringify({ type: 'updatePlayers', players });
 
-    Object.keys(players).forEach(playerId => {
-        let currentPlayer = players[playerId];
-        if (currentPlayer.hp <= 0) {
-            players[playerId].alive = false;
-        }
-    });
+    // Object.keys(players).forEach(playerId => {
+    //     let currentPlayer = players[playerId];
+    //     if (currentPlayer.hp <= 0) {
+    //         players[playerId].alive = false;
+    //     }
+    // });
 
     Object.keys(players).forEach(playerId => {
-        players[playerId].webSocket.send(data);
+       // console.log("broadcasting player data to player: " + players[playerId].id);
+        players[playerId].websocket.send(data);
     });
 }
 
