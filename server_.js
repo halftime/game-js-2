@@ -2,34 +2,21 @@ import Player from './player.js';
 // import WebSocket from 'ws';
 import { WebSocketServer } from 'ws';
 import { serverResource } from './server-resource.js';
+import { heartbeatSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite } from './sprites.js';
 
 
-// create new websocket server
-// ts WebSocketServer
+
 const wss = new WebSocketServer({ port: 3000 }); //WebSocket.Server({ port: 3000 });
-
-
-// player object class holding player id, hitpoints, positions, color, ping
-
-// Store all connected players
 let players = {};
 
 wss.on('connection', (ws) => {
     const randomPlayerId = Math.round(Math.random() * 999999);
-
     ws.id = randomPlayerId; // assign player id to ws object
     let newPlayer = new Player(randomPlayerId, ws, 200, 200, Player.getRandomColor());
-    
-
-    //players.set(randomPlayerId, newPlayer);
     players[newPlayer.id] = newPlayer;
-
     console.log("new player connected: " + newPlayer.id);
-
     ws.send(JSON.stringify({ type: 'newPlayer', playerObj: newPlayer }));
-
-    broadcastPlayers();
-    //ws.send(JSON.stringify({ type: 'updatePlayers', players }));
+    //broadcastPlayers();
 
     // Handle incoming messages from the client
     ws.on('message', (message) => {
@@ -38,12 +25,9 @@ wss.on('connection', (ws) => {
         if (data.type === "keydown") {
             if (players[data.playerid] === undefined) return;  
             console.log("keydown received from client: " + data.playerid + " key: " + data.keyevent);
-
             if (players[data.playerid].updatePosition(data.keyevent)) {
                 console.log(">>> player position: " + players[data.playerid].position.x + " , " + players[data.playerid].position.y);
             }
-            // Send updated position to the server
-            //broadcastPlayers();
             return;
         }
 
@@ -58,8 +42,6 @@ wss.on('connection', (ws) => {
             console.log("click received from client at x: " + data.x + " y: " + data.y);
             return;
         }
-
-
     });
 
     // Remove the player when they disconnect
@@ -80,12 +62,17 @@ function broadcastPlayers() { // hardwire broadcast to server tick interval?
     const newFrameTime = Date.now();
     const data = JSON.stringify({ type: 'updatePlayers', players });
 
-    // Object.keys(players).forEach(playerId => {
-    //     let currentPlayer = players[playerId];
-    //     if (currentPlayer.hp <= 0) {
-    //         players[playerId].alive = false;
-    //     }
-    // });
+    Object.keys(players).forEach(playerId => {
+        let currentPlayer = players[playerId];
+        if (currentPlayer.hp <= 0) {
+            players[playerId].alive = false;
+        }else
+        {
+            walkingLegsSprite.step(16);
+            players[playerId].addChild(walkingLegsSprite);
+        }
+        
+    });
 
     Object.keys(players).forEach(playerId => {
        // console.log("broadcasting player data to player: " + players[playerId].id);

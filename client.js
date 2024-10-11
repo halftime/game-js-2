@@ -127,10 +127,11 @@ const bloodSpat = new Sprite({
 
 const update = (delta) => {
     ///console.log("update delta: " + delta);
-    mainScene.step(delta, mainScene);
-    for (const id in allPlayers) {
-        allPlayers[id].step(delta);
-    }
+    //mainScene.step(delta, mainScene);
+    mainScene.step(delta, null);
+    // for (const id in allPlayers) {
+    //     //allPlayers[id].step(delta);
+    // }
 }
 
 
@@ -150,9 +151,9 @@ const draw = () => {
         let otherPlayer = allPlayers[id];
         walkingLegsSprite.offsetX = otherPlayer.position.x;
         walkingLegsSprite.offsetY = otherPlayer.position.y;
-        //walkingLegsSprite.rotationDeg = myMouseAngleDeg;
+        walkingLegsSprite.rotationDeg = myMouseAngleDeg;
         walkingLegsSprite.rotationDeg = otherPlayer.suggAngleDeg;
-        console.log("player rotation: " + otherPlayer.suggAngleDeg);
+        //console.log("player rotation: " + otherPlayer.suggAngleDeg);
         otherPlayer.addChild(walkingLegsSprite);
         otherPlayer.draw(ctx, otherPlayer.position.x, otherPlayer.position.y);
     }

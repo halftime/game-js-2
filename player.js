@@ -37,10 +37,7 @@ export default class Player extends gameobject{
 
     updatePosition(keyEvent) // return true if position was updated
     {
-        //console.log("keyEvent: " + keyEvent);
-
         let proposedPosition = new Vector(this.position.x, this.position.y);
-
         let suggAngleDeg = 0;
 
         if (keyEvent === 'Enter') this.takeDamage(55);
@@ -52,8 +49,8 @@ export default class Player extends gameobject{
 
         if (!serverResource.isWallCollision(proposedPosition))
         {
+            this.step(20);
             this.position.setXY(proposedPosition.x, proposedPosition.y);
-            
             return true;
         }
         return false;
