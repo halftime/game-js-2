@@ -62,7 +62,7 @@ export default class Player extends gameobject{
         {
             this.hp = 0;
             this.alive = false;
-            //this.webSocket.send(JSON.stringify({ type: 'playerDead' }));
+            //this.webSocket.send(JSON.stringify({ type: 'playerDead' , playerid: this.id }));
         }
     }
 

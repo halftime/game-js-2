@@ -10,11 +10,12 @@ export const heartbeatSprite = new Sprite({
     vFrames: 1,
     frameSize: { width: 27, height: 27 },
     frame: 0,
-    position: new Vector(10, 10),
+    position: new Vector(15, 15),
     scale: 2,
-    rotation: 0,
+    rotationDeg: 0,
     animationConfig: new FrameIndexPattern(HEARTBEATOKFRAMES)
 });
+
 
 export const playerDeadSprite = new Sprite({
     resource: resources.images.player_dead,
@@ -22,7 +23,8 @@ export const playerDeadSprite = new Sprite({
     hFrames: 75, vFrames: 1,
     position: new Vector(0, 0),
     frame: 0,
-    scale: 1, rotation: 0,
+    scale: 1, 
+    rotationDeg: 1,
     animationConfig: new FrameIndexPattern(DEADFRAMES)
 });
 
@@ -30,9 +32,10 @@ export const walkingLegsSprite = new Sprite({
     resource: resources.images.legswalking,
     frameSize: { width: 14, height: 54 },
     hFrames: 32, vFrames: 1,
-    position: new Vector(-10, -20),
+    position: new Vector(-5, -15),
     frame: 0,
-    scale: 1, rotation: 0,
+    scale: 1, 
+    rotationDeg: 45,
     animationConfig: new FrameIndexPattern(LEGFRAMES)
 });
 
@@ -44,5 +47,5 @@ export const backgroundSprite = new Sprite({
     frame: 0,
     position: new Vector(0, 0),
     scale: 1,
-    rotation: 0
+    rotationDeg: 0
 });

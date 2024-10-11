@@ -26,10 +26,12 @@ export class gameobject {
     }
 
     draw(ctx, x, y) {
-        const drawPosX = x; //+ this.position.x; //+ this.drawOffset.x
-        const drawPosY = y; //+ this.position.y; //+ this.drawOffset.y;
+        const drawPosX = this.position.x;
+        const drawPosY =  this.position.y;
         
         this.children.forEach(child => {
+            child.offsetX = +x;
+            child.offsetY = +y;
             child.draw(ctx, drawPosX, drawPosY);
         });
         this.drawImage(ctx, drawPosX, drawPosY);
