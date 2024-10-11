@@ -7,6 +7,7 @@ import { FrameIndexPattern } from './FrameIndexPattern.js';
 import { DEADFRAMES, HEARTBEATOKFRAMES } from './animations.js';
 import { gameobject } from './GameObject.js';
 import { heartbeatSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite } from './sprites.js';
+import { HUD } from './HUD.js';
 
 
 const canvas = document.getElementById('gameCanvas');
@@ -33,6 +34,7 @@ let allPlayers = {};
 let myPlayerId = 0;
 
 const mainScene = new gameobject({});
+
 
 mainScene.addChild(backgroundSprite);
 mainScene.addChild(heartbeatSprite);
@@ -73,6 +75,10 @@ socket.onmessage = (message) => {
     if (data.type === 'newPlayer') {
         console.log("my player object added: " + JSON.stringify(data.playerObj));
         myPlayerId = data.playerObj.id;
+        myPlayer = data.playerObj;
+        console.log("my player >>>>: " + JSON.stringify(myPlayer));
+        const PlayerHUD = new HUD(new Vector(0, 0), myPlayer, 'red');
+        mainScene.addChild(PlayerHUD);
         return;
     }
 
@@ -157,6 +163,9 @@ const draw = () => {
         otherPlayer.addChild(walkingLegsSprite);
         otherPlayer.draw(ctx, otherPlayer.position.x, otherPlayer.position.y);
     }
+
+    const myHud = new HUD({ position: new Vector(0, 0), myPlayerObj: allPlayers[myPlayerId], color: 'red' });
+    myHud.draw(ctx, 0, 0);
 
     //mainScene.addChild(myPlayer);
 

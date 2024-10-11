@@ -11,6 +11,11 @@ class Resources {
             HUD_hb_impacted: "./sprites/player/heartbeat-impacted.png",
             HUD_hb_critical: "./sprites/player/heartbeat-critical.png",
             player_dead: "./sprites/player/death.png",
+
+            //weapons
+            bat_model: "./sprites/Baseball/bat_model.png",
+            ak_model: "./sprites/AK/ak_model.png",
+            katana_model: "./sprites/Katana/katana_model.png",
         };
 
         // this.walls = [new Vector(50, 50), new Vector(910, 50), new Vector(50, 660), new Vector(910, 660)];
