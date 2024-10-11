@@ -5,11 +5,7 @@ export class gameobject {
         this.uniqueId = Math.random().toString(9);
         this.position = position ?? new Vector(0, 0);
         
-        Object.defineProperty(this, 'children', {
-            value: [],
-            writable: true,  // You can modify it later
-            enumerable: false // Exclude it from JSON.stringify
-        });
+        this.children = [];
     }
 
     stepEntry(delta, root) {

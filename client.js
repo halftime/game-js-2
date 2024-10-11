@@ -94,6 +94,7 @@ socket.onmessage = (message) => {
                 allPlayers[id].color = data.players[id].color;
                 allPlayers[id].ping = data.players[id].ping;
                 allPlayers[id].fps = data.players[id].fps;
+                allPlayers[id].suggAngleDeg = data.players[id].suggAngleDeg;
             }
             else {
                 const player = data.players[id];
@@ -149,8 +150,10 @@ const draw = () => {
         let otherPlayer = allPlayers[id];
         walkingLegsSprite.offsetX = otherPlayer.position.x;
         walkingLegsSprite.offsetY = otherPlayer.position.y;
-        walkingLegsSprite.rotationDeg = myMouseAngleDeg;
-        //otherPlayer.addChild(walkingLegsSprite);
+        //walkingLegsSprite.rotationDeg = myMouseAngleDeg;
+        walkingLegsSprite.rotationDeg = otherPlayer.suggAngleDeg;
+        console.log("player rotation: " + otherPlayer.suggAngleDeg);
+        otherPlayer.addChild(walkingLegsSprite);
         otherPlayer.draw(ctx, otherPlayer.position.x, otherPlayer.position.y);
     }
 

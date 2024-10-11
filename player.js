@@ -23,6 +23,7 @@ export default class Player extends gameobject{
         this.ping = 0;
         this.fps = 0;
         this.currPlayerFrame = 0;
+        this.suggAngleDeg = 0;
 
         this.currentFrameCount = 0;
         this.previousFrameTime = Date.now();
@@ -40,16 +41,19 @@ export default class Player extends gameobject{
 
         let proposedPosition = new Vector(this.position.x, this.position.y);
 
+        let suggAngleDeg = 0;
 
         if (keyEvent === 'Enter') this.takeDamage(55);
-        if (keyEvent === 'ArrowUp') proposedPosition.y -= 5;
-        if (keyEvent === 'ArrowDown') proposedPosition.y += 5;
-        if (keyEvent === 'ArrowLeft') proposedPosition.x -= 5;
-        if (keyEvent === 'ArrowRight') proposedPosition.x += 5;
+        if (keyEvent === 'ArrowUp') { proposedPosition.y -= 5; suggAngleDeg = 90; }
+        if (keyEvent === 'ArrowDown') { proposedPosition.y += 5; suggAngleDeg = 270; }
+        if (keyEvent === 'ArrowLeft') { proposedPosition.x -= 5; suggAngleDeg = 180; }
+        if (keyEvent === 'ArrowRight') { proposedPosition.x += 5; suggAngleDeg = 0; }
+        this.suggAngleDeg = (suggAngleDeg + 90) % 360;
 
         if (!serverResource.isWallCollision(proposedPosition))
         {
             this.position.setXY(proposedPosition.x, proposedPosition.y);
+            
             return true;
         }
         return false;

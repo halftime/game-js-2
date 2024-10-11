@@ -106,6 +106,7 @@ function ServerTickLoop() {
     // Do server tick logic here
     Object.keys(players).forEach(playerId => {
         players[playerId].currPlayerFrame += 1;
+        console.log("player to json: " + JSON.stringify(players[playerId]));
     });
     broadcastPlayers();
 
