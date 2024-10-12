@@ -4,16 +4,43 @@ import { Vector } from './grid.js';
 import { FrameIndexPattern } from './FrameIndexPattern.js';
 import { HEARTBEATOKFRAMES, DEADFRAMES, LEGFRAMES  } from './animations.js';
 
-export const heartbeatSprite = new Sprite({
+export const heartOKSprite = new Sprite({
     resource: resources.images.HUD_hb_normal,
     hFrames: 28,
     vFrames: 1,
-    frameSize: { width: 27, height: 27 },
+    frameSize: { width: 27, height: 36 },
     frame: 0,
-    position: new Vector(15, 15),
+    position: new Vector(0, -10),
     scale: 2,
     rotationDeg: 0,
-    animationConfig: new FrameIndexPattern(HEARTBEATOKFRAMES)
+    animationConfig: new FrameIndexPattern(HEARTBEATOKFRAMES),
+    spriteNameId: 'heartOKSprite'
+});
+
+export const heartImpactedSprite = new Sprite({
+    resource: resources.images.HUD_hb_impacted,
+    hFrames: 36,
+    vFrames: 1,
+    frameSize: { width: 27, height: 36 },
+    frame: 0,
+    position: new Vector(0, -10),
+    scale: 2,
+    rotationDeg: 0,
+    animationConfig: new FrameIndexPattern(HEARTBEATOKFRAMES),
+    spriteNameId: 'heartImpactedSprite'
+});
+
+export const heartCriticalSprite = new Sprite({
+    resource: resources.images.HUD_hb_critical,
+    hFrames: 36,
+    vFrames: 1,
+    frameSize: { width: 35, height: 36 },
+    frame: 0,
+    position: new Vector(0, -10),
+    scale: 2,
+    rotationDeg: 0,
+    animationConfig: new FrameIndexPattern(HEARTBEATOKFRAMES), 
+    spriteNameId: 'heartCriticalSprite'
 });
 
 
@@ -25,7 +52,8 @@ export const playerDeadSprite = new Sprite({
     frame: 0,
     scale: 1, 
     rotationDeg: 1,
-    animationConfig: new FrameIndexPattern(DEADFRAMES)
+    animationConfig: new FrameIndexPattern(DEADFRAMES),
+    spriteNameId: 'playerDeadSprite'
 });
 
 export const walkingLegsSprite = new Sprite({
@@ -49,3 +77,4 @@ export const backgroundSprite = new Sprite({
     scale: 1,
     rotationDeg: 0
 });
+

@@ -2,7 +2,7 @@ import Player from './player.js';
 // import WebSocket from 'ws';
 import { WebSocketServer } from 'ws';
 import { serverResource } from './server-resource.js';
-import { heartbeatSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite } from './sprites.js';
+import { heartOKSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite } from './sprites.js';
 
 
 

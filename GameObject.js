@@ -1,33 +1,41 @@
 import { Vector } from "./grid.js";
 
 export class gameobject {
-    constructor({ position }) {
-        this.uniqueId = Math.random().toString(9);
+    constructor({ position, stringId }) {
+        this.uniqueId = stringId ?? Math.random().toString();
         this.position = position ?? new Vector(0, 0);
-        
-        this.children = [];
+        //this.children = {};
+        Object.defineProperty(this, 'children', {
+            value: new Map(),
+            writable: true,  // You can modify it later
+            enumerable: false // Exclude it from JSON.stringify
+        });
     }
 
     stepEntry(delta, root) {
-        this.children.forEach(child => {
+        Object.keys(this.children).forEach(childId => {
+            const child = this.children[childId];
+            if (child === undefined) { return; }
             child.stepEntry(delta, root);
         });
         this.step(delta);
     }
 
     step(_delta) { // override
-        this.children.forEach(c => {
-            c.step(_delta);
+        Object.keys(this.children).forEach(childId => {
+            this.children[childId].step(_delta);
         });
     }
 
     draw(ctx, x, y) {
-        const drawPosX = this.position.x;
-        const drawPosY =  this.position.y;
-        
-        this.children.forEach(child => {
-            child.offsetX = +x;
-            child.offsetY = +y;
+        const drawPosX = this.position.x + x;
+        const drawPosY = this.position.y + y;
+
+        Object.keys(this.children).forEach(childId => {
+            const child = this.children[childId];
+            if (child === undefined) { return; }
+            child.offsetX = -x;
+            child.offsetY = -y;
             child.draw(ctx, drawPosX, drawPosY);
         });
         this.drawImage(ctx, drawPosX, drawPosY);
@@ -37,11 +45,13 @@ export class gameobject {
     }
 
     addChild(gameObject) {
-        if (this.children.filter(child => child.uniqueId === gameObject.uniqueId).length > 0) { return; }
-        this.children.push(gameObject);
+        if (this.children[gameObject.uniqueId]) { return; }
+        this.children[gameObject.uniqueId] = gameObject;
     }
 
     removechild(gameObject) {
-        this.children = this.children.filter(child => child !== gameObject);
+        if (this.children[gameObject.uniqueId]) {
+            delete this.children[gameObject.uniqueId];
+        }
     }
 }

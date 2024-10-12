@@ -12,15 +12,16 @@ export class Sprite extends gameobject {
         scale,
         rotationDeg,
         animationConfig,
+        spriteNameId
     }) {
-        super({});
+        super({ position, uniqueId: spriteNameId });
         this.resource = resource; // image resource
         this.frameSize = frameSize; // sprite frame size
         this.hFrames = hFrames ?? 1; // sprite horizontal frames
         this.vFrames = vFrames ?? 1;
         this.frame = frame;
         this.frameMap = new Map();
-        this.position = position ?? new Vector(0, 0);
+        this.position = position; //?? new Vector(0, 0);
         this.scale = scale ?? 1;
         this.rotationDeg = rotationDeg ?? 0; // sprite rotation angle in radians
         this.animations = animationConfig ?? null;

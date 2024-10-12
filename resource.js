@@ -7,7 +7,7 @@ class Resources {
             mapXgenStudio: "./sprites/maps/xgen_studio-map.png",
             hitsplat: "./sprites/glock/glock-hitsplat.png",
             legswalking: "./sprites/player/legs-walking.png",
-            HUD_hb_normal: "./sprites/player/heartbeat-healthy.png",
+            HUD_hb_normal: "./sprites/player/heartbeat-healthy_36h.png",
             HUD_hb_impacted: "./sprites/player/heartbeat-impacted.png",
             HUD_hb_critical: "./sprites/player/heartbeat-critical.png",
             player_dead: "./sprites/player/death.png",

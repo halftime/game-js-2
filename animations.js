@@ -78,8 +78,8 @@ const makedeathframes = (rootframe = 0) => {
     }
 }
 
-const makeHeartBeatOkFrames = (rootframe = 0) => {
-    const totalFrames = 28;
+const makeHeartBeatOkFrames = (rootframe = 0) => { // same timing for other heartbeats
+    const totalFrames = 36;
     const duration = 1000;
     const frameTime = duration / totalFrames;
     
@@ -121,4 +121,6 @@ const makeLegFrames = (rootframe = 0) => {
 
 export const DEADFRAMES = makedeathframes(0);
 export const HEARTBEATOKFRAMES = makeHeartBeatOkFrames(0);
+
+
 export const LEGFRAMES = makeLegFrames(0);
