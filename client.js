@@ -9,6 +9,10 @@ import { gameobject } from './GameObject.js';
 import { heartOKSprite, heartCriticalSprite, heartImpactedSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite } from './sprites.js';
 import { HUDOverlay } from './HUD.js';
 
+const serverPort = 5500;
+const serverUrl = `ws://localhost:${serverPort}`;
+
+const radToDeg = 180 / Math.PI;
 
 const gameCanvas = document.getElementById('gameCanvas');
 const uiCanvas = document.getElementById('uiCanvas');
@@ -20,11 +24,11 @@ const dpr = window.devicePixelRatio;
 gameCtx.scale(dpr, dpr);
 const rect = gameCanvas.getBoundingClientRect();
 
-function getMousePos(canvas, evt) {
+function getMousePos(canvas, event) {
     const rect = canvas.getBoundingClientRect();
     return {
-        x: evt.clientX - rect.left,
-        y: evt.clientY - rect.top
+        x: event.clientX - rect.left,
+        y: event.clientY - rect.top
     };
 }
 
@@ -34,7 +38,7 @@ gameCanvas.height = rect.height * dpr;
 gameCanvas.style.width = `${rect.width}px`;
 gameCanvas.style.height = `${rect.height}px`;
 
-let allPlayers = {};
+let allPlayers = new Map();
 let myPlayerId = 0;
 
 const mainScene = new gameobject({ position: new Vector(0, 0), uniqudId: 'mainScene' });
@@ -45,26 +49,25 @@ mainScene.addChild(backgroundSprite);
 
 
 // Establish a connection to the server
-const socket = new WebSocket('ws://localhost:3000');
-console.log("connected to ws://localhost:3000");
+console.log("connecting to server: " + serverUrl);
+const socket = new WebSocket(serverUrl);
 
-let myMouseAngleDeg = 0;
+document.addEventListener('click', (event) => {
+    //const rect = gameCanvas.getBoundingClientRect();
 
-gameCanvas.addEventListener('mousemove', (evt) => {
-    const mousePos = getMousePos(gameCanvas, evt);
-    if (myPlayerId === 0) return;
-    const mouseAngle = Math.atan2(mousePos.y - allPlayers[myPlayerId].position.y, mousePos.x - allPlayers[myPlayerId].position.x);
-    //console.log("mouse angle: " + mouseAngle);
-    myMouseAngleDeg = mouseAngle * 180 / Math.PI;
-    socket.send(JSON.stringify({ type: 'mousemove', mousePos: mousePos }));
-}
-);
+    socket.send(JSON.stringify({ type: 'mouseclick', mousePos: getMousePos(gameCanvas, event), playerId: myPlayerId }));
+});
 
-gameCanvas.addEventListener('click', (event) => {
-    const rect = gameCanvas.getBoundingClientRect();
-    const x = event.clientX - rect.left;
-    const y = event.clientY - rect.top;
-    socket.send(JSON.stringify({ type: 'click', x, y }));
+
+document.addEventListener('mousemove', (event) => {
+    const mousePos = getMousePos(gameCanvas, event);
+    if (myPlayerId === 0 || !allPlayers[myPlayerId]) return; // player not yet created
+
+    const myMouseAngleDeg = Math.round(Math.atan2(mousePos.y - allPlayers[myPlayerId].position.y, mousePos.x - allPlayers[myPlayerId].position.x) * radToDeg * 100)/100;
+    console.log("Mouse position (x, y): " + mousePos.x + " , " + mousePos.y);
+    console.log("Mouse angle (in deg 0-360)" + myMouseAngleDeg);
+    socket.send(JSON.stringify({ type: 'mousemove', mousePos: mousePos, mouseAngle: myMouseAngleDeg, playerId : myPlayerId }));
+    //socket.emit('mousemove', { mousePos: mousePos, mouseAngle: myMouseAngleDeg, playerId: myPlayerId });
 });
 
 document.addEventListener('keydown', (event) => {
@@ -88,7 +91,6 @@ socket.onmessage = (message) => {
     }
 
     if (data.type === 'ping') { // server sends ping challange, client responds with pong
-
         console.log("received ws ping: " + data.ping.challangeId);
         let myPingChallange = new PingChallange(data.ping.challangeId, data.ping.initTimestamp, Date.now());
         socket.send(JSON.stringify({ type: 'pong', pong: myPingChallange }));
@@ -105,7 +107,7 @@ socket.onmessage = (message) => {
                 allPlayers[id].color = data.players[id].color;
                 allPlayers[id].ping = data.players[id].ping;
                 allPlayers[id].fps = data.players[id].fps;
-                allPlayers[id].suggAngleDeg = data.players[id].suggAngleDeg;
+                allPlayers[id].mouseAngle = data.players[id].mouseAngle;
             }
             else {
                 const player = data.players[id];
@@ -159,7 +161,6 @@ let lastFrameTime = performance.now();
 const draw = () => {
     const currentTime = performance.now();
     const deltaTime = currentTime - lastFrameTime;
-
     lastFrameTime = currentTime;
     gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
     uiCtx.clearRect(0, 0, uiCanvas.width, uiCanvas.height);
@@ -169,36 +170,15 @@ const draw = () => {
         let otherPlayer = allPlayers[id];
         walkingLegsSprite.offsetX = otherPlayer.position.x;
         walkingLegsSprite.offsetY = otherPlayer.position.y;
-        walkingLegsSprite.rotationDeg = myMouseAngleDeg;
-        walkingLegsSprite.rotationDeg = otherPlayer.suggAngleDeg;
-        //console.log("player rotation: " + otherPlayer.suggAngleDeg);
+        walkingLegsSprite.rotationDeg = otherPlayer.mouseAngle;
         otherPlayer.addChild(walkingLegsSprite);
         otherPlayer.draw(gameCtx, otherPlayer.position.x, otherPlayer.position.y);
     }
     //console.log("delta frame time ms: " + deltaTime);
     
-    //myHud.draw(ctx);
-    //myHud.step(deltaTime);
-    //myHud.draw(ctx, 0, canvas.height - 100);
-    //mainScene.addChild(myHud);
     if (allPlayers[myPlayerId] === undefined) return;
-    
-    const myHud = new HUDOverlay({ position: new Vector(0, uiCanvas.height - 100), myPlayerObj: allPlayers[myPlayerId], color: 'red', frameTimeMs: 0, mainSceneObj: mainScene });
+    const myHud = new HUDOverlay({ position: new Vector(0, uiCanvas.height - 100), myPlayerObj: allPlayers[myPlayerId], color: 'red', frameTimeMs: deltaTime, mainSceneObj: mainScene });
     myHud.draw(uiCtx, 0, uiCanvas.height - 100);
-    //mainScene.addChild(myHud);
-
-    //myHud.draw(ctx, 0, canvas.height - 100);
-    // mainScene.removechild(heartOKSprite);
-    // mainScene.removechild(heartCriticalSprite);
-    // mainScene.removechild(heartImpactedSprite);
-
-
-    
-        //console.log("my player position: " + allPlayers[myPlayerId].position.x + ", " + allPlayers[myPla
-    console.log(mainScene.children.size);
-
-    //const PlayerHUD = new HUDOverlay(new Vector(0, 0), myPlayer, 'red');
-    //PlayerHUD.draw(ctx, 0, 0);
 }
 
 let gameLoop = new GameLoop(update, draw);

@@ -121,6 +121,4 @@ const makeLegFrames = (rootframe = 0) => {
 
 export const DEADFRAMES = makedeathframes(0);
 export const HEARTBEATOKFRAMES = makeHeartBeatOkFrames(0);
-
-
 export const LEGFRAMES = makeLegFrames(0);

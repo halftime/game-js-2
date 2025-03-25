@@ -1,16 +1,13 @@
 import Player from './player.js';
-// import WebSocket from 'ws';
 import { WebSocketServer } from 'ws';
-import { serverResource } from './server-resource.js';
+import { myServerResource } from './server-resource.js';
 import { heartOKSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite } from './sprites.js';
 
-
-
-const wss = new WebSocketServer({ port: 3000 }); //WebSocket.Server({ port: 3000 });
-let players = {};
+const wss = new WebSocketServer({ port: myServerResource.serverPort }); //WebSocket.Server({ port: 3000 });
+let players = new Map();
 
 wss.on('connection', (ws) => {
-    const randomPlayerId = Math.round(Math.random() * 999999);
+    const randomPlayerId = Math.floor(Math.random() * 1000000);
     ws.id = randomPlayerId; // assign player id to ws object
     let newPlayer = new Player(randomPlayerId, ws, 200, 200, Player.getRandomColor());
     players[newPlayer.id] = newPlayer;
@@ -21,14 +18,17 @@ wss.on('connection', (ws) => {
     // Handle incoming messages from the client
     ws.on('message', (message) => {
         const data = JSON.parse(message);
+
+
         //if (data.playerid === undefined) return;
         if (data.type === "keydown") {
-            if (players[data.playerid] === undefined) return;  
+            if (players[data.playerid] === undefined) return;
             console.log("keydown received from client: " + data.playerid + " key: " + data.keyevent);
-            if (players[data.playerid].updatePosition(data.keyevent)) {
-                console.log(">>> player position: " + players[data.playerid].position.x + " , " + players[data.playerid].position.y);
-            }
-            return;
+            console.log(data)
+
+            players[data.playerid].updatePosition(data.keyevent);
+            console.log(">>> player position: " + players[data.playerid].position.x + " , " + players[data.playerid].position.y);
+
         }
 
         if (data.type === "pong") {
@@ -38,8 +38,17 @@ wss.on('connection', (ws) => {
             return;
         }
 
-        if (data.type === "click") {
-            console.log("click received from client at x: " + data.x + " y: " + data.y);
+        if (data.type === "mouseclick") {
+            console.log("mouseclick received from client: " + data.playerId);
+            if (players[data.playerId] === undefined) return;
+            console.log(`mouseclick received from client ${data.playerId} at x: ${data.mousePos.x} y: ${data.mousePos.y}`);
+            return;
+        }
+
+        if (data.type === "mousemove") {
+            if (players[data.playerId] === undefined) return;
+            players[data.playerId].mouseAngle = data.mouseAngle;
+            //console.log(`mousemove received from client ${data.playerId} at x: ${data.mousePos.x} y: ${data.mousePos.y} angle: ${data.mouseAngle}`);
             return;
         }
     });
@@ -66,16 +75,15 @@ function broadcastPlayers() { // hardwire broadcast to server tick interval?
         let currentPlayer = players[playerId];
         if (currentPlayer.hp <= 0) {
             players[playerId].alive = false;
-        }else
-        {
+        } else {
             walkingLegsSprite.step(16);
             players[playerId].addChild(walkingLegsSprite);
         }
-        
+
     });
 
     Object.keys(players).forEach(playerId => {
-       // console.log("broadcasting player data to player: " + players[playerId].id);
+        // console.log("broadcasting player data to player: " + players[playerId].id);
         players[playerId].websocket.send(data);
     });
 }
@@ -93,7 +101,7 @@ function ServerTickLoop() {
     // Do server tick logic here
     Object.keys(players).forEach(playerId => {
         players[playerId].currPlayerFrame += 1;
-        console.log("player to json: " + JSON.stringify(players[playerId]));
+        //console.log("player to json: " + JSON.stringify(players[playerId]));
     });
     broadcastPlayers();
 
@@ -127,6 +135,5 @@ ServerTickLoop();
 //     console.log("sent " + JSON.stringify(myPingChallange));
 // }, 10000);
 
-console.log('Server is running on ws://localhost:3000');
-
+console.log('Server is running');
 ServerTickLoop();

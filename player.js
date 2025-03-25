@@ -1,12 +1,13 @@
 import { Vector } from "./grid.js";
 //import { resources } from "./resource.js";
-import { serverResource } from "./server-resource.js";
+import { myServerResource } from "./server-resource.js";
 import { gameobject } from './GameObject.js';
 
-export default class Player extends gameobject{
-    constructor(playerId, websocket = null, x, y, color = "black")
-    {
-        super ({ position: new Vector(x, y) });
+
+
+export default class Player extends gameobject {
+    constructor(playerId, websocket = null, x, y, color = "black") {
+        super({ position: new Vector(x, y) });
         this.id = playerId;
 
         Object.defineProperty(this, 'websocket', {
@@ -23,14 +24,16 @@ export default class Player extends gameobject{
         this.ping = 0;
         this.fps = 0;
         this.currPlayerFrame = 0;
-        this.suggAngleDeg = 0;
+
+
+        this.mouseAngle = 0;
 
         this.currentFrameCount = 0;
         this.previousFrameTime = Date.now();
 
 
         this.latestKeyTimeMs = Date.now(); // to prevent key spamming
-        this.latestClickTimeMs = Date.now(); // to prevent click spamming
+        this.latestClickTimeMs = Date.now(); // to prevent click spamming%
 
         this.wasAlive = true;
         this.prevKeyEvent = undefined;
@@ -38,35 +41,31 @@ export default class Player extends gameobject{
 
     updatePosition(keyEvent) // return true if position was updated
     {
-        let proposedPosition = new Vector(this.position.x, this.position.y);
-        let suggAngleDeg = 0;
+        let proposedPosition = new Vector(this.position.x, this.position.y); // copy current player position
+        let movingDistance = 10;
 
-        let movingDistance = 15;
+       // if (keyEvent !== this.prevKeyEvent) movingDistance = 30;
 
-        if (keyEvent !== this.prevKeyEvent) movingDistance = 30;
+        if (keyEvent === 'Enter' || keyEvent === "Space") this.takeDamage(20);
+        if (keyEvent === 'ArrowUp') { proposedPosition.y -= movingDistance; this.mouseAngle = 90; }
+        if (keyEvent === 'ArrowDown') { proposedPosition.y += movingDistance;  this.mouseAngle = 270; }
+        if (keyEvent === 'ArrowLeft') { proposedPosition.x -= movingDistance; this.mouseAngle = 180; }
+        if (keyEvent === 'ArrowRight') { proposedPosition.x += movingDistance; this.mouseAngle = 0; }
+        console.log(">>> player position: " + proposedPosition.x + " , " + proposedPosition.y);
 
-        if (keyEvent === 'Enter') this.takeDamage(20);
-        if (keyEvent === 'ArrowUp') { proposedPosition.y -= movingDistance; suggAngleDeg = 90; }
-        if (keyEvent === 'ArrowDown') { proposedPosition.y += movingDistance; suggAngleDeg = 270; }
-        if (keyEvent === 'ArrowLeft') { proposedPosition.x -= movingDistance; suggAngleDeg = 180; }
-        if (keyEvent === 'ArrowRight') { proposedPosition.x += movingDistance; suggAngleDeg = 0; }
-        this.suggAngleDeg = (suggAngleDeg + 90) % 360;
-
-        if (!serverResource.isWallCollision(proposedPosition))
-        {
+        if (myServerResource.isCoordinateValid(proposedPosition.x, proposedPosition.y)) {
             this.step(20);
             this.position.setXY(proposedPosition.x, proposedPosition.y);
             this.prevKeyEvent = keyEvent;
             return true;
         }
+        console.log("buhh collision detected");
         return false;
     }
 
-    takeDamage(damage)
-    {
+    takeDamage(damage) {
         this.hp -= damage;
-        if (this.hp <= 0)
-        {
+        if (this.hp <= 0) {
             this.hp = 0;
             this.alive = false;
             //this.webSocket.send(JSON.stringify({ type: 'playerDead' , playerid: this.id }));
@@ -74,8 +73,7 @@ export default class Player extends gameobject{
         return;
     }
 
-    static getRandomColor()
-    {
+    static getRandomColor() {
         const color = ['red', 'green', 'blue', 'yellow', 'purple', 'orange', 'pink', 'brown', 'white'];
         return color[Math.floor(Math.random() * color.length)];
     }
@@ -90,13 +88,12 @@ export default class Player extends gameobject{
     //     }
     // }
 
-    drawImage(ctx, x, y)
-    {
-         ctx.beginPath();
+    drawImage(ctx, x, y) {
+        ctx.beginPath();
         ctx.fillStyle = this.color;
         ctx.arc(this.position.x, this.position.y, 10, 10, 0, 2 * Math.PI);
-         ctx.fill();
-         ctx.closePath();
+        ctx.fill();
+        ctx.closePath();
     }
 
 

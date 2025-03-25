@@ -1,6 +1,5 @@
 import { gameobject } from "./GameObject.js";
 import { heartOKSprite, heartCriticalSprite, heartImpactedSprite } from "./sprites.js";
-import { Vector } from "./grid.js";
 
 export class HUDOverlay extends gameobject {
     constructor({ position, myPlayerObj, color, frameTimeMs, mainSceneObj }) {
@@ -25,20 +24,13 @@ export class HUDOverlay extends gameobject {
             uiCtx.fillStyle = `rgba(255, 0, 0, ${opacity})`; // Red screen with decreasing opacity
             uiCtx.fillRect(0, 0, uiCanvas.width, uiCanvas.height);
 
-            // Draw "You Died" text
             uiCtx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
             uiCtx.font = '50px Arial';
             uiCtx.fillText('Sit down', uiCanvas.width * 4/6, uiCanvas.height * 4/6);
             uiCtx.fillText('You are dead', uiCanvas.width * 1/4, uiCanvas.height * 1/6);
             uiCtx.fillText('Get rekt', uiCanvas.width * 3/4, uiCanvas.height * 2/6);
-            uiCtx.fillText('Got cooked?', uiCanvas.width * 1/6, uiCanvas.height * 3/6);
+            uiCtx.fillText('rip in pizza', uiCanvas.width * 1/6, uiCanvas.height * 3/6);
             uiCtx.fillText('Git gud', uiCanvas.width * 2/6, uiCanvas.height * 5/6);
-
-            // Decrease opacity over time
-           // opacity -= 0.02;
-
-            // Stop animation when fully transparent
-
         };
 
        deathAnimation();
@@ -63,15 +55,11 @@ export class HUDOverlay extends gameobject {
         ctx.fillStyle = 'green';
         ctx.fillRect(5, 5, this.myPlayerObj.hp / 100 * 200, 20);
 
-        //this.addChild(heartOKSprite);
-        //heartOKSprite.frame = this.counter % 36;
-       // heartOKSprite.draw(ctx, 50, 50);
-        //ctx.drawImage(heartOKSprite.resource.image, 0, 0, 27, 27, 50, 50, 27, 27);
-
         ctx.fillStyle = this.color;
         ctx.fillText(`Ping: ${this.pingMs} ms`, 0, this.position.y + 15);
         ctx.fillText(`FPS: ${Math.round(1000 / this.frameTimeMs)}`, 0, this.position.y + 30);
-        ctx.fillText('Position: ' + this.myPlayerObj.position.x + ', ' + this.myPlayerObj.position.y, 0, this.position.y + 45);
+        ctx.fillText(`Position: ${this.myPlayerObj.position.x} ${this.myPlayerObj.position.y}`, 0, this.position.y + 45);
+        ctx.fillText(`Mouse angle: ${this.myPlayerObj.mouseAngle}°`, 0, this.position.y + 60);
         ctx.restore();
 
         if (this.myPlayerObj.hp <= 0) 
@@ -105,20 +93,5 @@ export class HUDOverlay extends gameobject {
             heartCriticalSprite.draw(ctx, 0, 0);
             return;
         }
-
-        
-        
     }
-
-    // fps = 1 / (deltaTime / 1000); // from ms to seconds
-    // ctx.fillStyle = 'red';
-    // ctx.fillText(`FPS: ${Math.round(fps)}`, 0, 10);
-    // ctx.fillText(`Players: ${Object.keys(allPlayers).length}`, 0, 30);
-    // ctx.fillText(`Ping: ${pingMs} ms`, 0, 50);
-
-    // if (allPlayers[myPlayerId] !== undefined) {
-    //     ctx.fillText('HP: ' + allPlayers[myPlayerId].hp, 0, 70);
-    //     ctx.fillText(`Player position x, y: ${allPlayers[myPlayerId].position.x ?? 0}, ${allPlayers[myPlayerId].position.y ?? 0}`, 0, 90);
-    // }
-    
 }
