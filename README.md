@@ -1,4 +1,4 @@
-# vibe coding my way to XGEN Valhalla
+# vibe coding to XGEN Valhalla
 sprites & map from the OG StickArena @ http://xgenstudios.com/play/stickarena
 
 ### Game server
