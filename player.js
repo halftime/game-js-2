@@ -13,7 +13,7 @@ export default class Player extends gameobject {
         Object.defineProperty(this, 'websocket', {
             value: websocket,
             writable: true,  // You can modify it later
-            enumerable: false // Exclude it from JSON.stringify
+            enumerable: false // Exclude websocket from JSON.stringify
         });
 
         this.hp = 100;

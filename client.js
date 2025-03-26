@@ -41,12 +41,8 @@ gameCanvas.style.height = `${rect.height}px`;
 let allPlayers = new Map();
 let myPlayerId = 0;
 
-const mainScene = new gameobject({ position: new Vector(0, 0), id: 'mainScene' });
-
-
+const mainScene = new gameobject({ position: new Vector(0, 0), id: 'mainscene' });
 mainScene.addChild(backgroundSprite);
-//mainScene.addChild(heartOKSprite);
-
 
 // Establish a connection to the server
 console.log("connecting to server: " + serverUrl);

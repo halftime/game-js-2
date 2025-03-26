@@ -81,12 +81,12 @@ function broadcastPlayers() { // hardwire broadcast to server tick interval?
 
     Object.keys(activePlayers).forEach(playerId => {
         let currentPlayer = activePlayers[playerId];
-        if (currentPlayer.hp <= 0) {
+        if (currentPlayer.hp <= 0) 
+            {
             activePlayers[playerId].alive = false;
-        } else {
-            walkingLegsSprite.step(16);
-            activePlayers[playerId].addChild(walkingLegsSprite);
-        }
+            // broadcast dead player
+            // dead client needs to be forced to respawn
+        } 
 
     });
 
@@ -95,7 +95,7 @@ function broadcastPlayers() { // hardwire broadcast to server tick interval?
         activePlayers[playerId].websocket.send(data);
     });
 
-    //console.log("broadcasting player data; " + data);
+    console.log("broadcasting player data; " + data);
 }
 
 

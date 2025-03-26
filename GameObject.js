@@ -8,8 +8,8 @@ export class gameobject {
         Object.defineProperty(this, 'children', {
             value: new Map(),
             writable: true,  // You can modify it later
-            enumerable: false // false would Exclude it from JSON.stringify
-        }); // children hold a bunch of frames??? 
+            enumerable: true // false would Exclude children from JSON.stringify, ie not being broadcasted to clients
+        });
     }
 
     stepEntry(delta, root) {
