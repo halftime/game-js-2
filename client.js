@@ -60,13 +60,15 @@ document.addEventListener('click', (event) => {
 
 
 document.addEventListener('mousemove', (event) => {
-    const mousePos = getMousePos(gameCanvas, event);
+    
     if (myPlayerId === 0 || !allPlayers[myPlayerId]) return; // player not yet created
 
+    const mousePos = getMousePos(gameCanvas, event);
     const myMouseAngleDeg = Math.round(Math.atan2(mousePos.y - allPlayers[myPlayerId].position.y, mousePos.x - allPlayers[myPlayerId].position.x) * radToDeg * 100)/100;
-    console.log("Mouse position (x, y): " + mousePos.x + " , " + mousePos.y);
-    console.log("Mouse angle (in deg 0-360)" + myMouseAngleDeg);
-    socket.send(JSON.stringify({ type: 'mousemove', mousePos: mousePos, mouseAngle: myMouseAngleDeg, playerId : myPlayerId }));
+
+    // console.log("Mouse position (x, y): " + mousePos.x + " , " + mousePos.y);
+    // console.log("Mouse angle (in deg 0-360)" + myMouseAngleDeg);
+    socket.send(JSON.stringify({ type: 'mousemove', latestMousePos: mousePos, latestMouseAngle: myMouseAngleDeg, playerId : myPlayerId }));
     //socket.emit('mousemove', { mousePos: mousePos, mouseAngle: myMouseAngleDeg, playerId: myPlayerId });
 });
 
@@ -107,7 +109,8 @@ socket.onmessage = (message) => {
                 allPlayers[id].color = data.players[id].color;
                 allPlayers[id].ping = data.players[id].ping;
                 allPlayers[id].fps = data.players[id].fps;
-                allPlayers[id].mouseAngle = data.players[id].mouseAngle;
+                allPlayers[id].latestMousePos = data.players[id].latestMousePos;
+                allPlayers[id].latestMouseAngle = data.players[id].latestMouseAngle;
             }
             else {
                 const player = data.players[id];

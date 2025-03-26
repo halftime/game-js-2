@@ -58,8 +58,9 @@ export class HUDOverlay extends gameobject {
         ctx.fillStyle = this.color;
         ctx.fillText(`Ping: ${this.pingMs} ms`, 0, this.position.y + 15);
         ctx.fillText(`FPS: ${Math.round(1000 / this.frameTimeMs)}`, 0, this.position.y + 30);
-        ctx.fillText(`Position: ${this.myPlayerObj.position.x} ${this.myPlayerObj.position.y}`, 0, this.position.y + 45);
-        ctx.fillText(`Mouse angle: ${this.myPlayerObj.mouseAngle}°`, 0, this.position.y + 60);
+        ctx.fillText(`Position: ${this.myPlayerObj.position.x} , ${this.myPlayerObj.position.y}`, 0, this.position.y + 45);
+        ctx.fillText(`Mouse pos: ${this.myPlayerObj.latestMousePos.x} , ${this.myPlayerObj.latestMousePos.y}`, 0, this.position.y + 60);
+        ctx.fillText(`Mouse angle: ${this.myPlayerObj.latestMouseAngle}°`, 0, this.position.y + 75);
         ctx.restore();
 
         if (this.myPlayerObj.hp <= 0) 

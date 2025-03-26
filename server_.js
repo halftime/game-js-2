@@ -53,10 +53,9 @@ wss.on('connection', (ws) => {
         if (data.type === "mousemove") {
             if (activePlayers[data.playerId] === undefined) return;
             activePlayers[data.playerId].latestMouseMoveTimeMs = timestampOnReceive;
-            activePlayers[data.playerId].latestMouseAngle = data.mouseAngle;
-            activePlayers[data.playerId].latestMousePos = data.mousePos;
-            
-            console.log(`mousemove received from client ${data.playerId} at x: ${data.mousePos.x} y: ${data.mousePos.y} angle: ${data.mouseAngle}`);
+            activePlayers[data.playerId].latestMouseAngle = data.latestMouseAngle;
+            activePlayers[data.playerId].latestMousePos = data.latestMousePos;
+            //console.log(`mousemove received from client ${data.playerId} at x: ${data.latestMousePos.x} y: ${data.latestMousePos.y} angle: ${data.latestMouseAngle}`);
             return;
         }
     });
@@ -96,7 +95,7 @@ function broadcastPlayers() { // hardwire broadcast to server tick interval?
         activePlayers[playerId].websocket.send(data);
     });
 
-    console.log("broadcasting player data; " + data);
+    //console.log("broadcasting player data; " + data);
 }
 
 
