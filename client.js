@@ -56,7 +56,7 @@ const socket = new WebSocket(serverUrl);
         console.log("event type: " + eventType);
         console.log("event " + event);
 
-        if (eventType === 'mousemove' && myPlayerId !== 0 && allPlayers.has(myPlayerId)) {
+        if (eventType === 'mousemove') {
             const myPlayer = allPlayers.get(myPlayerId);
             payload.latestMouseAngle = Math.round(Math.atan2(mousePos.y - allPlayers.get(myPlayerId).position.y, mousePos.x - allPlayers.get(myPlayerId).position.x) * radToDeg * 100) / 100;
         }
@@ -75,7 +75,7 @@ socket.onmessage = (message) => {
     const data = JSON.parse(message.data);
     if (data.type === 'newplayer') {
         console.log("my player object added: " + JSON.stringify(data.playerObj));
-        myPlayerId = data.playerObj.id;
+        myPlayerId = data.playerObj.playerid;
         console.log("my player id: " + myPlayerId);
         // const newPlayer = new Player(data.playerObj.id, socket, data.playerObj.position.x, data.playerObj.position.y, data.playerObj.color);
         // console.log("new player >>>>: " + JSON.stringify(newPlayer));
@@ -93,20 +93,21 @@ socket.onmessage = (message) => {
     if (data.type === 'broadcast') {
         console.log("broadcast received: " + JSON.stringify(data.players));
 
-        data.players.forEach(playerObj => {
-            if (!allPlayers.has(playerObj.id)) {
-                const newPlayer = new Player(playerObj.id, null, playerObj.position.x, playerObj.position.y, playerObj.color);
-                allPlayers.set(playerObj.id, newPlayer);
-                console.log(`Added new player to allPlayers: ${playerObj.id}`);
+        Array.from(data.players).forEach(playerObj => {
+            if (!allPlayers.has(playerObj.playerid)) {
+
+                const newPlayer = new Player(playerObj.playerid, null, playerObj.position.x, playerObj.position.y, playerObj.color);
+                allPlayers.set(playerObj.playerid, newPlayer);
+                console.log(`Added new player to allPlayers: ${playerObj.playerid}`);
             } else {
-                const existingPlayer = allPlayers.get(playerObj.id);
+                const existingPlayer = allPlayers.get(playerObj.playerid);
                 existingPlayer.position = playerObj.position;
                 existingPlayer.alive = playerObj.alive;
                 existingPlayer.hp = playerObj.hp;
-                existingPlayer.latestMousePos = playerObj.latestMousePos;
-                existingPlayer.latestMouseAngle = playerObj.latestMouseAngle;
-                existingPlayer.fps = playerObj.fps;
-                existingPlayer.currPlayerFrame = playerObj.currPlayerFrame;
+                // existingPlayer.latestMousePos = playerObj.latestMousePos;
+                // existingPlayer.latestMouseAngle = playerObj.latestMouseAngle;
+                // existingPlayer.fps = playerObj.fps;
+                // existingPlayer.currPlayerFrame = playerObj.currPlayerFrame;
             }
         });
 

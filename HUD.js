@@ -28,14 +28,14 @@ export class HUDOverlay extends gameobject {
 
             uiCtx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
             uiCtx.font = '50px Arial';
-            uiCtx.fillText('Sit down', uiCanvas.width * 4/6, uiCanvas.height * 4/6);
-            uiCtx.fillText('You are dead', uiCanvas.width * 1/4, uiCanvas.height * 1/6);
-            uiCtx.fillText('Get rekt', uiCanvas.width * 3/4, uiCanvas.height * 2/6);
-            uiCtx.fillText('rip in pizza', uiCanvas.width * 1/6, uiCanvas.height * 3/6);
-            uiCtx.fillText('Git gud', uiCanvas.width * 2/6, uiCanvas.height * 5/6);
+            uiCtx.fillText('Sit down', uiCanvas.width * 4 / 6, uiCanvas.height * 4 / 6);
+            uiCtx.fillText('You are dead', uiCanvas.width * 1 / 4, uiCanvas.height * 1 / 6);
+            uiCtx.fillText('Get rekt', uiCanvas.width * 3 / 4, uiCanvas.height * 2 / 6);
+            uiCtx.fillText('rip in pizza', uiCanvas.width * 1 / 6, uiCanvas.height * 3 / 6);
+            uiCtx.fillText('Git gud', uiCanvas.width * 2 / 6, uiCanvas.height * 5 / 6);
         };
 
-       deathAnimation();
+        deathAnimation();
     }
 
 
@@ -66,31 +66,27 @@ export class HUDOverlay extends gameobject {
         ctx.fillText(`Mouse angle: ${this.myPlayerObj.latestMouseAngle}°`, 0, this.position.y + 75);
         ctx.restore();
 
-        if (this.myPlayerObj.hp <= 0) 
-        {
+        if (this.myPlayerObj.hp <= 0) {
             this.startDeathAnimation(ctx);
         }
 
         //ctx.translate(0, 0); 
-        if (this.myPlayerObj.hp >= 75) 
-        {
-          this.mainSceneObj.addChild(heartOKSprite);
-          this.mainSceneObj.removechild(heartCriticalSprite);
-          this.mainSceneObj.removechild(heartImpactedSprite);
+        if (this.myPlayerObj.hp >= 75) {
+            this.mainSceneObj.addChild(heartOKSprite);
+            this.mainSceneObj.removechild(heartCriticalSprite);
+            this.mainSceneObj.removechild(heartImpactedSprite);
             heartOKSprite.draw(ctx, 0, 0);
             return;
         }
 
-        if (this.myPlayerObj.hp < 75 && this.myPlayerObj.hp > 25) 
-        {
+        if (this.myPlayerObj.hp < 75 && this.myPlayerObj.hp > 25) {
             this.mainSceneObj.addChild(heartImpactedSprite);
             this.mainSceneObj.removechild(heartOKSprite);
             this.mainSceneObj.removechild(heartCriticalSprite);
             heartImpactedSprite.draw(ctx, 0, 0);
             return;
         }
-        if (this.myPlayerObj.hp <= 25 && this.myPlayerObj.hp > 0) 
-        {
+        if (this.myPlayerObj.hp <= 25 && this.myPlayerObj.hp > 0) {
             this.mainSceneObj.addChild(heartCriticalSprite);
             this.mainSceneObj.removechild(heartOKSprite);
             this.mainSceneObj.removechild(heartImpactedSprite);

@@ -12,59 +12,52 @@ wss.on('connection', (ws) => {
     ws.id = randomPlayerId; // assign player id to ws object
     let newPlayer = new Player(randomPlayerId, ws, 200, 200, Player.getRandomColor());
     activePlayers.set(randomPlayerId, newPlayer);
-
-
     console.log("new player connected: " + newPlayer.id);
     ws.send(JSON.stringify({ type: 'newplayer', playerObj: newPlayer }));
-    //broadcastPlayers();
+
 
     // Handle incoming messages from the client
     ws.on('message', (message) => {
         const timestampOnReceive = Date.now();
         const data = JSON.parse(message);
 
+        if (!activePlayers.has(data.playerid)) return;
 
-        //if (data.playerid === undefined) return;
-        if (data.type === "keydown") {
-            if (!data.playerid || !activePlayers.has(data.playerid)) return;
-            const _player = activePlayers.get(data.playerid);
-            _player.latestKeyTimeMs = timestampOnReceive;
+        const currPlayer = activePlayers.get(data.playerid);
+        console.log("current player: " + JSON.stringify(currPlayer));
+        console.log("received message from client: " + data.type + " playerid: " + data.playerid);
+        switch (data.type) {
+            case "keydown":
+                currPlayer.latestKeyTimeMs = timestampOnReceive;
+                const netPosChange = myServerResource.netPosChangeFromKeyEvent(data.keyevent);
+                const suggestedPosition = myServerResource.moveFromPosition(currPlayer.position, netPosChange);
+                if (!myServerResource.isCoordinateObstructed(suggestedPosition.x, suggestedPosition.y)) {
+                    currPlayer.position = suggestedPosition;
+                }
+                return;
 
-            const netPosChange = myServerResource.netPosChangeFromKeyEvent(data.keyevent);
-            const suggestedPosition = myServerResource.moveFromPosition(_player.position, netPosChange);
-            if (!myServerResource.isCoordinateObstructed(suggestedPosition.x, suggestedPosition.y)) {
-                _player.position = suggestedPosition;
-            }
-            return;
-        }
+            case "click":
+                currPlayer.latestClickTimeMs = timestampOnReceive;
+                console.log(`mouseclick received from client ${data.playerid} at x: ${data.mousePos.x} y: ${data.mousePos.y}`);
+                currPlayer.takeDamage(20); // testing damage, death
+                return;
 
-        
+            case "mousemove":
 
-        if (data.type === "click") {
-            if (activePlayers.has(data.playerid) === false) return;
-            activePlayers.get(data.playerid).latestClickTimeMs = timestampOnReceive;
-            console.log(`mouseclick received from client ${data.playerId} at x: ${data.mousePos.x} y: ${data.mousePos.y}`);
+                currPlayer.latestMouseMoveTimeMs = timestampOnReceive;
+                currPlayer.latestMouseAngle = data.latestMouseAngle;
+                currPlayer.latestMousePos = data.latestMousePos;
+                return;
 
-            activePlayers.get(data.playerid).takeDamage(20); // testing damage, death
-            return;
-        }
+            case "pong":
+                console.log("pong received from client");
+                const pongChallange = new PingChallange(data.pong.challangeId, data.pong.initTimestamp, data.pong.pongTimestamp);
+                console.log("pong received challange:: " + pongChallange.challangeId + " ping ms: " + pongChallange.calculatePing());
+                return;
 
-        if (data.type === "mousemove") {
-            if (activePlayers[data.playerid] === undefined) return;
-            activePlayers.get(data.playerid).latestMouseMoveTimeMs = timestampOnReceive;
-            activePlayers.get(data.playerid).latestMouseAngle = data.latestMouseAngle;
-            activePlayers.get(data.playerid).latestMousePos = data.latestMousePos;
-            //console.log(`mousemove received from client ${data.playerId} at x: ${data.latestMousePos.x} y: ${data.latestMousePos.y} angle: ${data.latestMouseAngle}`);
-            return;
-        }
-
-
-
-        if (data.type === "pong") {
-            console.log("pong received from client");
-            let pongChallange = new PingChallange(data.pong.challangeId, data.pong.initTimestamp, data.pong.pongTimestamp);
-            console.log("pong received challange:: " + pongChallange.challangeId + " ping ms: " + pongChallange.calculatePing());
-            return;
+            default:
+                console.error(`Unknown data type: ${data.type}`);
+                return;
         }
     });
 
@@ -99,7 +92,7 @@ function broadcastPlayers() { // hardwire broadcast to server tick interval?
     });
 
 
-   // console.log("broadcasting; " + data);
+    // console.log("broadcasting; " + data);
 }
 
 
