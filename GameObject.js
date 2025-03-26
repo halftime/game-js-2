@@ -1,15 +1,15 @@
 import { Vector } from "./grid.js";
 
 export class gameobject {
-    constructor({ position, stringId }) {
-        this.uniqueId = stringId ?? Math.random().toString();
+    constructor({ position, id }) {
+        this.id = id ?? Math.random().toString();
         this.position = position ?? new Vector(0, 0);
         //this.children = {};
         Object.defineProperty(this, 'children', {
             value: new Map(),
             writable: true,  // You can modify it later
-            enumerable: true // false would Exclude it from JSON.stringify
-        });
+            enumerable: false // false would Exclude it from JSON.stringify
+        }); // children hold a bunch of frames??? 
     }
 
     stepEntry(delta, root) {
@@ -45,13 +45,13 @@ export class gameobject {
     }
 
     addChild(gameObject) {
-        if (this.children[gameObject.uniqueId]) { return; }
-        this.children[gameObject.uniqueId] = gameObject;
+        if (this.children[gameObject.id]) { return; }
+        this.children[gameObject.id] = gameObject;
     }
 
     removechild(gameObject) {
-        if (this.children[gameObject.uniqueId]) {
-            delete this.children[gameObject.uniqueId];
+        if (this.children[gameObject.id]) {
+            delete this.children[gameObject.id];
         }
     }
 }

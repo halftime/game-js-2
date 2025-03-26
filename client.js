@@ -9,7 +9,7 @@ import { gameobject } from './GameObject.js';
 import { heartOKSprite, heartCriticalSprite, heartImpactedSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite } from './sprites.js';
 import { HUDOverlay } from './HUD.js';
 
-const serverPort = 5500;
+const serverPort = 5501;
 const serverUrl = `ws://localhost:${serverPort}`;
 
 const radToDeg = 180 / Math.PI;
@@ -41,7 +41,7 @@ gameCanvas.style.height = `${rect.height}px`;
 let allPlayers = new Map();
 let myPlayerId = 0;
 
-const mainScene = new gameobject({ position: new Vector(0, 0), uniqudId: 'mainScene' });
+const mainScene = new gameobject({ position: new Vector(0, 0), id: 'mainScene' });
 
 
 mainScene.addChild(backgroundSprite);
@@ -96,7 +96,7 @@ socket.onmessage = (message) => {
         socket.send(JSON.stringify({ type: 'pong', pong: myPingChallange }));
     }
 
-    if (data.type === 'updatePlayers') {
+    if (data.type === 'broadcast') {
         //console.log("updatePlayers: " + JSON.stringify(data.players));
         for (const id in data.players) {
             if (allPlayers[id] !== undefined) {

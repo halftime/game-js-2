@@ -1,6 +1,6 @@
 import { Vector } from "./grid.js";
 //import { resources } from "./resource.js";
-import { myServerResource } from "./server-resource.js";
+//import { myServerResource } from "./server-resource.js";
 import { gameobject } from './GameObject.js';
 
 
@@ -25,42 +25,18 @@ export default class Player extends gameobject {
         this.fps = 0;
         this.currPlayerFrame = 0;
 
-
-        this.mouseAngle = 0;
+        this.latestMousePos = new Vector(0, 0);
+        this.latestMouseAngle = 0; // angle in degrees
+        this.latestMouseMoveTimeMs = Date.now();
 
         this.currentFrameCount = 0;
         this.previousFrameTime = Date.now();
 
-
         this.latestKeyTimeMs = Date.now(); // to prevent key spamming
-        this.latestClickTimeMs = Date.now(); // to prevent click spamming%
+        this.latestClickTimeMs = Date.now(); // to prevent click spamming
 
         this.wasAlive = true;
         this.prevKeyEvent = undefined;
-    }
-
-    updatePosition(keyEvent) // return true if position was updated
-    {
-        let proposedPosition = new Vector(this.position.x, this.position.y); // copy current player position
-        let movingDistance = 10;
-
-       // if (keyEvent !== this.prevKeyEvent) movingDistance = 30;
-
-        if (keyEvent === 'Enter' || keyEvent === "Space") this.takeDamage(20);
-        if (keyEvent === 'ArrowUp') { proposedPosition.y -= movingDistance; this.mouseAngle = 90; }
-        if (keyEvent === 'ArrowDown') { proposedPosition.y += movingDistance;  this.mouseAngle = 270; }
-        if (keyEvent === 'ArrowLeft') { proposedPosition.x -= movingDistance; this.mouseAngle = 180; }
-        if (keyEvent === 'ArrowRight') { proposedPosition.x += movingDistance; this.mouseAngle = 0; }
-        console.log(">>> player position: " + proposedPosition.x + " , " + proposedPosition.y);
-
-        if (myServerResource.isCoordinateValid(proposedPosition.x, proposedPosition.y)) {
-            this.step(20);
-            this.position.setXY(proposedPosition.x, proposedPosition.y);
-            this.prevKeyEvent = keyEvent;
-            return true;
-        }
-        console.log("buhh collision detected");
-        return false;
     }
 
     takeDamage(damage) {

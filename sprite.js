@@ -14,7 +14,7 @@ export class Sprite extends gameobject {
         animationConfig,
         spriteNameId
     }) {
-        super({ position, uniqueId: spriteNameId });
+        super({ position, id: spriteNameId });
         this.resource = resource; // image resource
         this.frameSize = frameSize; // sprite frame size
         this.hFrames = hFrames ?? 1; // sprite horizontal frames
