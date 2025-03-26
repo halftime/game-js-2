@@ -6,7 +6,7 @@ import { GameLoop } from './gameloop.js';
 import { FrameIndexPattern } from './FrameIndexPattern.js';
 import { DEADFRAMES, HEARTBEATOKFRAMES } from './animations.js';
 import { gameobject } from './GameObject.js';
-import { heartOKSprite, heartCriticalSprite, heartImpactedSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite } from './sprites.js';
+import { heartOKSprite, heartCriticalSprite, heartImpactedSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite, bloodSpat } from './sprites.js';
 import { HUDOverlay } from './HUD.js';
 
 const serverPort = 5501;
@@ -43,28 +43,27 @@ let myPlayerId = 0;
 
 const mainScene = new gameobject({ position: new Vector(0, 0), id: 'mainscene' });
 mainScene.addChild(backgroundSprite);
+
+// Establish a connection to the server
+console.log("connecting to server: " + serverUrl);
 const socket = new WebSocket(serverUrl);
 
-document.addEventListener('click', (event) => {
-    socket.send(JSON.stringify({ type: 'mouseclick', mousePos: getMousePos(gameCanvas, event), playerId: myPlayerId }));
-});
+['click', 'mousemove', 'keydown'].forEach(eventType => {
+    document.addEventListener(eventType, (event) => {
+        const mousePos = getMousePos(gameCanvas, event);
+        const payload = { type: eventType, mousePos, playerid: myPlayerId };
 
+        if (eventType === 'mousemove' && myPlayerId !== 0 && allPlayers.has(myPlayerId)) {
+            const myPlayer = allPlayers.get(myPlayerId);
+            payload.latestMouseAngle = Math.round(Math.atan2(mousePos.y - myPlayer.position.y, mousePos.x - myPlayer.position.x) * radToDeg * 100) / 100;
+        }
 
-document.addEventListener('mousemove', (event) => {
-    if (myPlayerId === 0 || allPlayers.has(myPlayerId) === false) return;
-    const myPlayer = allPlayers.get(myPlayerId);
-    const mousePos = getMousePos(gameCanvas, event);
-    const myMouseAngleDeg = Math.round(Math.atan2(mousePos.y - myPlayer.position.y, mousePos.x - myPlayer.position.x) * radToDeg * 100) / 100;
+        if (eventType === 'keydown') {
+            payload.keyevent = event.key;
+        }
 
-    // console.log("Mouse position (x, y): " + mousePos.x + " , " + mousePos.y);
-    // console.log("Mouse angle (in deg 0-360)" + myMouseAngleDeg);
-    socket.send(JSON.stringify({ type: 'mousemove', latestMousePos: mousePos, latestMouseAngle: myMouseAngleDeg, playerId: myPlayerId }));
-    //socket.emit('mousemove', { mousePos: mousePos, mouseAngle: myMouseAngleDeg, playerId: myPlayerId });
-});
-
-document.addEventListener('keydown', (event) => {
-    console.log("key pressed: " + event.key);
-    socket.send(JSON.stringify({ type: 'keydown', keyevent: event.key, playerid: myPlayerId }));
+        socket.send(JSON.stringify(payload));
+    });
 });
 
 let pingMs = 0;
@@ -75,6 +74,7 @@ socket.onmessage = (message) => {
     if (data.type === 'newplayer') {
         console.log("my player object added: " + JSON.stringify(data.playerObj));
         myPlayerId = data.playerObj.id;
+        console.log("my player id: " + myPlayerId);
         // const newPlayer = new Player(data.playerObj.id, socket, data.playerObj.position.x, data.playerObj.position.y, data.playerObj.color);
         // console.log("new player >>>>: " + JSON.stringify(newPlayer));
         // allPlayers.set(data.playerId, newPlayer);
@@ -107,6 +107,10 @@ socket.onmessage = (message) => {
                 existingPlayer.currPlayerFrame = playerObj.currPlayerFrame;
             }
         });
+
+        // for (const _p in data.players) {
+        //     allPlayers.set(_p.id, data.players[_p.id]);
+        // }
     }
 
     if (data.type === 'playerDead') {
@@ -118,15 +122,6 @@ socket.onmessage = (message) => {
 
 // Render game loop
 // capture the ctx framerate and display it on the screen
-
-const bloodSpat = new Sprite({
-    resource: resources.images.hitsplat,
-    frameSize: { width: 64, height: 64 },
-    hFrames: 10, vFrames: 1,
-    position: new Vector(0, 0),
-    frame: 0,
-    scale: 1, rotationDeg: 0
-});
 
 const update = (delta) => {
     mainScene.stepEntry(delta, mainScene);
@@ -149,7 +144,12 @@ const draw = () => {
     lastFrameTime = currentTime;
     gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
     mainScene.draw(gameCtx, 0, 0);
-    Array.from(allPlayers.values()).forEach(_player => {
+    // draw inventory
+    // etc
+
+    allPlayers.keys().forEach(playerId => {
+        const _player = allPlayers.get(playerId);
+
         if (_player === undefined) return;
         if (_player.alive === false) return;
         // console.log("drawing player: " + _player.id + " " + _player.position.x + " , " + _player.position.y);
@@ -159,7 +159,7 @@ const draw = () => {
         walkingLegsSprite.offsetX = _player.position.x;
         walkingLegsSprite.offsetY = _player.position.y;
         walkingLegsSprite.rotationDeg = (_player.latestMouseAngle + 90) % 360;
-        _player.addChild(walkingLegsSprite);
+        //_player.addChild(walkingLegsSprite);
         _player.draw(gameCtx, _player.position.x, _player.position.y);
     });
     //console.log("delta frame time ms: " + deltaTime);
@@ -167,7 +167,7 @@ const draw = () => {
     uiCtx.clearRect(0, 0, uiCanvas.width, uiCanvas.height);
     const myHud = new HUDOverlay({ position: new Vector(0, uiCanvas.height - 100), myPlayerObj: allPlayers.get(myPlayerId), color: 'red', frameTimeMs: deltaTime, mainSceneObj: mainScene });
     myHud.draw(uiCtx, 0, uiCanvas.height - 100);
-
+    //bloodSpat.draw(uiCtx, 200, 200);
 }
 
 let gameLoop = new GameLoop(update, draw);

@@ -81,3 +81,12 @@ export const backgroundSprite = new Sprite({
     spriteNameId: 'backgroundSprite' // Ensure unique ID
 });
 
+export const bloodSpat = new Sprite({
+    resource: resources.images.hitsplat,
+    frameSize: { width: 64, height: 64 },
+    hFrames: 10, vFrames: 1,
+    position: new Vector(0, 0),
+    frame: 0,
+    scale: 1, rotationDeg: 0
+});
+

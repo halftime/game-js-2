@@ -1,7 +1,7 @@
 import Player from './player.js';
 import { WebSocketServer } from 'ws';
 import { myServerResource } from './server-resource.js';
-import { heartOKSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite } from './sprites.js';
+// import { heartOKSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite } from './sprites.js';
 
 const wss = new WebSocketServer({ port: myServerResource.serverPort });
 console.log("server port: " + myServerResource.serverPort);
@@ -12,6 +12,7 @@ wss.on('connection', (ws) => {
     ws.id = randomPlayerId; // assign player id to ws object
     let newPlayer = new Player(randomPlayerId, ws, 200, 200, Player.getRandomColor());
     activePlayers.set(randomPlayerId, newPlayer);
+
 
     console.log("new player connected: " + newPlayer.id);
     ws.send(JSON.stringify({ type: 'newplayer', playerObj: newPlayer }));
@@ -25,23 +26,23 @@ wss.on('connection', (ws) => {
 
         //if (data.playerid === undefined) return;
         if (data.type === "keydown") {
-            console.log("keydown " + data.keyevent);
-            console.log("activeplayers: " + activePlayers.size);
-            console.log(data);
-            if (!data.playerid || !activePlayers.has(data.playerid)) {
-                console.error("Invalid or missing player ID:", data.playerid);
-                return;
-            }
+            console.log("keydown " + data.keyevent + " " + data.playerid);
+
+            if (!data.playerid || !activePlayers.has(data.playerid)) return;
 
             const _player = activePlayers.get(data.playerid);
             _player.latestKeyTimeMs = timestampOnReceive;
 
             const netPosChange = myServerResource.netPosChangeFromKeyEvent(data.keyevent);
             const suggestedPosition = myServerResource.moveFromPosition(_player.position, netPosChange);
+
+            console.log("suggested position: " + suggestedPosition.x + " , " + suggestedPosition.y);
             if (!myServerResource.isCoordinateObstructed(suggestedPosition.x, suggestedPosition.y)) {
                 _player.position = suggestedPosition;
-                activePlayers.set(data.playerid, _player);
             }
+
+            //activePlayers.set(data.playerid, _player);
+            return;
         }
 
         if (data.type === "pong") {
@@ -52,21 +53,19 @@ wss.on('connection', (ws) => {
         }
 
         if (data.type === "mouseclick") {
-            const player = activePlayers.get(data.playerId); // Corrected access
-            if (!player) return;
-            player.latestClickTimeMs = timestampOnReceive;
+            if (activePlayers[data.playerId] === undefined) return;
+            activePlayers[data.playerId].latestClickTimeMs = timestampOnReceive;
             console.log(`mouseclick received from client ${data.playerId} at x: ${data.mousePos.x} y: ${data.mousePos.y}`);
 
-            player.takeDamage(20); // testing damage, death
+            activePlayers[data.playerId].takeDamage(20); // testing damage, death
             return;
         }
 
         if (data.type === "mousemove") {
-            const player = activePlayers.get(data.playerId); // Corrected access
-            if (!player) return;
-            player.latestMouseMoveTimeMs = timestampOnReceive;
-            player.latestMouseAngle = data.latestMouseAngle;
-            player.latestMousePos = data.latestMousePos;
+            if (activePlayers[data.playerId] === undefined) return;
+            activePlayers[data.playerId].latestMouseMoveTimeMs = timestampOnReceive;
+            activePlayers[data.playerId].latestMouseAngle = data.latestMouseAngle;
+            activePlayers[data.playerId].latestMousePos = data.latestMousePos;
             //console.log(`mousemove received from client ${data.playerId} at x: ${data.latestMousePos.x} y: ${data.latestMousePos.y} angle: ${data.latestMouseAngle}`);
             return;
         }
@@ -103,7 +102,7 @@ function broadcastPlayers() { // hardwire broadcast to server tick interval?
     });
 
 
-    console.log("broadcasting; " + data);
+   // console.log("broadcasting; " + data);
 }
 
 
@@ -117,7 +116,7 @@ function ServerTickLoop() {
     serverTickCounter += 1;
 
     // Do server tick logic here
-    activePlayers.forEach((player, playerId) => {
+    Object.keys(activePlayers).forEach(playerId => {
         // should the server set the frame or the client?
         //players[playerId].currPlayerFrame += 1;
 
