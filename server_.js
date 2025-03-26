@@ -47,6 +47,8 @@ wss.on('connection', (ws) => {
             if (activePlayers[data.playerId] === undefined) return;
             activePlayers[data.playerId].latestClickTimeMs = timestampOnReceive;
             console.log(`mouseclick received from client ${data.playerId} at x: ${data.mousePos.x} y: ${data.mousePos.y}`);
+
+            activePlayers[data.playerId].takeDamage(20); // testing damage, death
             return;
         }
 
@@ -121,19 +123,14 @@ function ServerTickLoop() {
     // Calculate the time we should wait until the next tick
     const timeToNextTick = nextTickTime - currentTime;
 
-    // Log tick rate every second (60 ticks)
+    // show tick rate every 5 seconds
     if (serverTickCounter % 300 === 0) {
         const avgtickrate = serverTickCounter / (performance.now() - initialTime) * 1000;
         console.log("Server tickcount: " + serverTickCounter + " avg tickrate: " + avgtickrate);
     }
 
-    // Ensure we don't go negative on the interval
     const waitTime = timeToNextTick < 0 ? 0 : timeToNextTick;
-
-    // Update next expected tick time
     nextTickTime += targetInterval;
-
-    // Use setTimeout for the next tick
     setTimeout(ServerTickLoop, waitTime);
 }
 

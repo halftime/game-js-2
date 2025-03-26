@@ -13,7 +13,7 @@ export class GameLoop {
         this.isRunning = false;
     }
 
-    mainloop = (timestamp) => {
+    mainloop(timestamp) {
         if (!this.isRunning) return;
         this.deltaTime = timestamp - this.lastTime;
         this.lastTime = timestamp;
@@ -24,20 +24,20 @@ export class GameLoop {
             this.accumulatedTime -= this.TimeStepMs;
         }
         this.render();
-        this.rafId = requestAnimationFrame(this.mainloop);
+        this.rafId = requestAnimationFrame(this.mainloop.bind(this));
     }
 
     start() {
         if (this.isRunning) return;
         this.isRunning = true;
-        this.rafId = requestAnimationFrame(this.mainloop);
-        
+        this.rafId = requestAnimationFrame(this.mainloop.bind(this));
+        console.log("Gameloop started!!");
     }
 
     stop() {
-        if (!this.isRunning) return;
-        this.isRunning = false;
         if (this.rafId) { cancelAnimationFrame(this.rafId); }
+        this.isRunning = false;
+        console.log("Gameloop stopped!!");
     }
 
 }

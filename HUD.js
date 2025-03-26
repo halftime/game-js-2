@@ -1,3 +1,4 @@
+import { HEARTBEATOKFRAMES } from "./animations.js";
 import { gameobject } from "./GameObject.js";
 import { heartOKSprite, heartCriticalSprite, heartImpactedSprite } from "./sprites.js";
 

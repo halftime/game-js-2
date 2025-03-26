@@ -2,6 +2,7 @@ import { Vector } from "./grid.js";
 //import { resources } from "./resource.js";
 //import { myServerResource } from "./server-resource.js";
 import { gameobject } from './GameObject.js';
+import { walkingLegsSprite } from './sprites.js';
 
 
 
@@ -18,8 +19,6 @@ export default class Player extends gameobject {
 
         this.hp = 100;
         this.alive = true;
-        //this.position = new Vector(x, y);
-        this._prevPosition = new Vector(0, 0);
         this.color = color;
         this.ping = 0;
         this.fps = 0;

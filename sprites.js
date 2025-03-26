@@ -2,7 +2,7 @@ import { Sprite } from './sprite.js';
 import { resources } from './resource.js';
 import { Vector } from './grid.js';
 import { FrameIndexPattern } from './FrameIndexPattern.js';
-import { HEARTBEATOKFRAMES, DEADFRAMES, LEGFRAMES  } from './animations.js';
+import { HEARTBEATOKFRAMES, DEADFRAMES, LEGFRAMES, BACKGROUNDFRAME  } from './animations.js';
 
 export const heartOKSprite = new Sprite({
     resource: resources.images.HUD_hb_normal,
@@ -63,18 +63,21 @@ export const walkingLegsSprite = new Sprite({
     position: new Vector(-5, -15),
     frame: 0,
     scale: 1, 
-    rotationDeg: 45,
-    animationConfig: new FrameIndexPattern(LEGFRAMES)
+    rotationDeg: 0,
+    animationConfig: new FrameIndexPattern(LEGFRAMES),
+    spriteNameId: 'walkingLegsSprite'
 });
 
 export const backgroundSprite = new Sprite({
     resource: resources.images.mapXgenStudio,
     hFrames: 1,
     vFrames: 1,
-    frameSize: { width: 1151, height: 791 },
-    frame: 0,
+    frameSize: { width: 700, height: 500 },
+    frame: 1,
     position: new Vector(0, 0),
     scale: 1,
-    rotationDeg: 0
+    rotationDeg: 0,
+   // animationConfig: new FrameIndexPattern(BACKGROUNDFRAME),
+    spriteNameId: 'backgroundSprite' // Ensure unique ID
 });
 

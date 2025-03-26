@@ -1,6 +1,6 @@
 //import { Vector } from './grid.js';
 
-class Resources {
+class PlayerResources {
     constructor() {
         this.toLoad = {
             background: "./sprites/maps/open-space.png",
@@ -37,7 +37,7 @@ class Resources {
     }
 }
 
-export const resources = new Resources();
+export const resources = new PlayerResources();
 
 // background map size
 // top left corner (50, 50)     // top right corner (910, 50)

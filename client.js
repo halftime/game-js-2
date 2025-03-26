@@ -56,15 +56,15 @@ document.addEventListener('click', (event) => {
 
 
 document.addEventListener('mousemove', (event) => {
-    
+
     if (myPlayerId === 0 || !allPlayers[myPlayerId]) return; // player not yet created
 
     const mousePos = getMousePos(gameCanvas, event);
-    const myMouseAngleDeg = Math.round(Math.atan2(mousePos.y - allPlayers[myPlayerId].position.y, mousePos.x - allPlayers[myPlayerId].position.x) * radToDeg * 100)/100;
+    const myMouseAngleDeg = Math.round(Math.atan2(mousePos.y - allPlayers[myPlayerId].position.y, mousePos.x - allPlayers[myPlayerId].position.x) * radToDeg * 100) / 100;
 
     // console.log("Mouse position (x, y): " + mousePos.x + " , " + mousePos.y);
     // console.log("Mouse angle (in deg 0-360)" + myMouseAngleDeg);
-    socket.send(JSON.stringify({ type: 'mousemove', latestMousePos: mousePos, latestMouseAngle: myMouseAngleDeg, playerId : myPlayerId }));
+    socket.send(JSON.stringify({ type: 'mousemove', latestMousePos: mousePos, latestMouseAngle: myMouseAngleDeg, playerId: myPlayerId }));
     //socket.emit('mousemove', { mousePos: mousePos, mouseAngle: myMouseAngleDeg, playerId: myPlayerId });
 });
 
@@ -138,12 +138,7 @@ const bloodSpat = new Sprite({
 });
 
 const update = (delta) => {
-    ///console.log("update delta: " + delta);
-    //mainScene.step(delta, mainScene);
-    mainScene.step(delta, null);
-    // for (const id in allPlayers) {
-    //     //allPlayers[id].step(delta);
-    // }
+    mainScene.stepEntry(delta, mainScene);
 }
 
 
@@ -153,29 +148,41 @@ const update = (delta) => {
 let lastFrameTime = performance.now();
 
 
-   // myHud.drawImage(ctx, 0, canvas.height - 100);
+// myHud.drawImage(ctx, 0, canvas.height - 100);
 
-    
+
 
 const draw = () => {
     const currentTime = performance.now();
     const deltaTime = currentTime - lastFrameTime;
     lastFrameTime = currentTime;
     gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-    uiCtx.clearRect(0, 0, uiCanvas.width, uiCanvas.height);
 
+
+    console.log("called mainScene.draw");
+    // mainScene.addChild(backgroundSprite);
+    // mainScene.children.forEach(child => {
+    //     console.log("mainscene child: " + child.id);
+    // });
     mainScene.draw(gameCtx, 0, 0);
+
+    // draw inventory
+    // etc
     for (const id in allPlayers) {
         let otherPlayer = allPlayers[id];
-        walkingLegsSprite.offsetX = otherPlayer.position.x;
-        walkingLegsSprite.offsetY = otherPlayer.position.y;
-        walkingLegsSprite.rotationDeg = otherPlayer.mouseAngle;
+        walkingLegsSprite.frame = otherPlayer.currPlayerFrame;
+        //walkingLegsSprite.step(deltaTime);
+        // walkingLegsSprite.offsetX = otherPlayer.position.x;
+        // walkingLegsSprite.offsetY = otherPlayer.position.y;
+        walkingLegsSprite.rotationDeg = (otherPlayer.latestMouseAngle + 90) % 360;
         otherPlayer.addChild(walkingLegsSprite);
         otherPlayer.draw(gameCtx, otherPlayer.position.x, otherPlayer.position.y);
     }
     //console.log("delta frame time ms: " + deltaTime);
-    
+
     if (allPlayers[myPlayerId] === undefined) return;
+
+    uiCtx.clearRect(0, 0, uiCanvas.width, uiCanvas.height);
     const myHud = new HUDOverlay({ position: new Vector(0, uiCanvas.height - 100), myPlayerObj: allPlayers[myPlayerId], color: 'red', frameTimeMs: deltaTime, mainSceneObj: mainScene });
     myHud.draw(uiCtx, 0, uiCanvas.height - 100);
 }

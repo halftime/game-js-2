@@ -4,7 +4,7 @@ export class gameobject {
     constructor({ position, id }) {
         this.id = id ?? Math.random().toString();
         this.position = position ?? new Vector(0, 0);
-        //this.children = {};
+        this.children = {};
         Object.defineProperty(this, 'children', {
             value: new Map(),
             writable: true,  // You can modify it later
