@@ -11,17 +11,20 @@ node server_.js
 npx http-server -p 5501
 ```
 
-To do Server
+### ToDo serverside
   * Different player spawning locations
   * Weapon spawning
-  * Weapon hit reg see hitbox sprites ( ak_hitbox.png)
-  * & Damage handling 
+  * Weapon hit reg
+  * & Damage handling
+  * Trigger client sprites from serverside
+     * Player keyEvent ArrowUP => set frame UP
+     * Serverstep (60/120 hz) ==> client step
   * Migrating to typescript?
   * Player tags, username, ...
   * Player chat
   * Scoreboard
 
-To Do Player
+### ToDo clientside
   * HUD improvements
   * Scoreboard display
   * Chatbox
@@ -29,6 +32,8 @@ To Do Player
   * Actual (local) multiplayer testing
   * Audio??
   * Sprites
+      * legs
+      * weapons & shots
   * Dead scene
   * & Respawning
   * Migrating to typescript?
