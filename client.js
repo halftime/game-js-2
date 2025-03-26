@@ -51,16 +51,18 @@ const socket = new WebSocket(serverUrl);
 ['click', 'mousemove', 'keydown'].forEach(eventType => {
     document.addEventListener(eventType, (event) => {
         const mousePos = getMousePos(gameCanvas, event);
-        const payload = { type: eventType, mousePos, playerid: myPlayerId };
+        const payload = { type: eventType, mousePos: mousePos, playerid: myPlayerId, latestMouseAngle: 0, keyevent: event.key ?? "" };
+
+        console.log("event type: " + eventType);
+        console.log("event " + event);
 
         if (eventType === 'mousemove' && myPlayerId !== 0 && allPlayers.has(myPlayerId)) {
             const myPlayer = allPlayers.get(myPlayerId);
-            payload.latestMouseAngle = Math.round(Math.atan2(mousePos.y - myPlayer.position.y, mousePos.x - myPlayer.position.x) * radToDeg * 100) / 100;
+            payload.latestMouseAngle = Math.round(Math.atan2(mousePos.y - allPlayers.get(myPlayerId).position.y, mousePos.x - allPlayers.get(myPlayerId).position.x) * radToDeg * 100) / 100;
         }
 
-        if (eventType === 'keydown') {
-            payload.keyevent = event.key;
-        }
+
+        console.log("sending payload: " + JSON.stringify(payload));
 
         socket.send(JSON.stringify(payload));
     });

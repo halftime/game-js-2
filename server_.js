@@ -26,47 +26,44 @@ wss.on('connection', (ws) => {
 
         //if (data.playerid === undefined) return;
         if (data.type === "keydown") {
-            console.log("keydown " + data.keyevent + " " + data.playerid);
-
             if (!data.playerid || !activePlayers.has(data.playerid)) return;
-
             const _player = activePlayers.get(data.playerid);
             _player.latestKeyTimeMs = timestampOnReceive;
 
             const netPosChange = myServerResource.netPosChangeFromKeyEvent(data.keyevent);
             const suggestedPosition = myServerResource.moveFromPosition(_player.position, netPosChange);
-
-            console.log("suggested position: " + suggestedPosition.x + " , " + suggestedPosition.y);
             if (!myServerResource.isCoordinateObstructed(suggestedPosition.x, suggestedPosition.y)) {
                 _player.position = suggestedPosition;
             }
-
-            //activePlayers.set(data.playerid, _player);
             return;
         }
+
+        
+
+        if (data.type === "click") {
+            if (activePlayers.has(data.playerid) === false) return;
+            activePlayers.get(data.playerid).latestClickTimeMs = timestampOnReceive;
+            console.log(`mouseclick received from client ${data.playerId} at x: ${data.mousePos.x} y: ${data.mousePos.y}`);
+
+            activePlayers.get(data.playerid).takeDamage(20); // testing damage, death
+            return;
+        }
+
+        if (data.type === "mousemove") {
+            if (activePlayers[data.playerid] === undefined) return;
+            activePlayers.get(data.playerid).latestMouseMoveTimeMs = timestampOnReceive;
+            activePlayers.get(data.playerid).latestMouseAngle = data.latestMouseAngle;
+            activePlayers.get(data.playerid).latestMousePos = data.latestMousePos;
+            //console.log(`mousemove received from client ${data.playerId} at x: ${data.latestMousePos.x} y: ${data.latestMousePos.y} angle: ${data.latestMouseAngle}`);
+            return;
+        }
+
+
 
         if (data.type === "pong") {
             console.log("pong received from client");
             let pongChallange = new PingChallange(data.pong.challangeId, data.pong.initTimestamp, data.pong.pongTimestamp);
             console.log("pong received challange:: " + pongChallange.challangeId + " ping ms: " + pongChallange.calculatePing());
-            return;
-        }
-
-        if (data.type === "mouseclick") {
-            if (activePlayers[data.playerId] === undefined) return;
-            activePlayers[data.playerId].latestClickTimeMs = timestampOnReceive;
-            console.log(`mouseclick received from client ${data.playerId} at x: ${data.mousePos.x} y: ${data.mousePos.y}`);
-
-            activePlayers[data.playerId].takeDamage(20); // testing damage, death
-            return;
-        }
-
-        if (data.type === "mousemove") {
-            if (activePlayers[data.playerId] === undefined) return;
-            activePlayers[data.playerId].latestMouseMoveTimeMs = timestampOnReceive;
-            activePlayers[data.playerId].latestMouseAngle = data.latestMouseAngle;
-            activePlayers[data.playerId].latestMousePos = data.latestMousePos;
-            //console.log(`mousemove received from client ${data.playerId} at x: ${data.latestMousePos.x} y: ${data.latestMousePos.y} angle: ${data.latestMouseAngle}`);
             return;
         }
     });
