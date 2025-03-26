@@ -22,7 +22,6 @@ ax.imshow(pixels)
 for rect in rectgls:
     ax.add_patch(patches.Rectangle((rect[0], rect[1]), rect[2]-rect[0], rect[3]-rect[1], linewidth=1, edgecolor='white', facecolor='none'))
 
-plt.show()
 plt.savefig('./output_wallplot.png')
-input("")
+plt.show()
 
