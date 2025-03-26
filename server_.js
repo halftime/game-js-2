@@ -10,11 +10,11 @@ let activePlayers = new Map();
 wss.on('connection', (ws) => {
     const randomPlayerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     ws.id = randomPlayerId; // assign player id to ws object
-
     let newPlayer = new Player(randomPlayerId, ws, 200, 200, Player.getRandomColor());
-    activePlayers[newPlayer.id] = newPlayer;
+    activePlayers.set(randomPlayerId, newPlayer);
+
     console.log("new player connected: " + newPlayer.id);
-    ws.send(JSON.stringify({ type: 'newPlayer', playerObj: newPlayer }));
+    ws.send(JSON.stringify({ type: 'newplayer', playerObj: newPlayer }));
     //broadcastPlayers();
 
     // Handle incoming messages from the client
@@ -25,15 +25,23 @@ wss.on('connection', (ws) => {
 
         //if (data.playerid === undefined) return;
         if (data.type === "keydown") {
-            if (activePlayers[data.playerid] === undefined) return;
-            activePlayers[data.playerid].latestKeyTimeMs = timestampOnReceive;
+            console.log("keydown " + data.keyevent);
+            console.log("activeplayers: " + activePlayers.size);
+            console.log(data);
+            if (!data.playerid || !activePlayers.has(data.playerid)) {
+                console.error("Invalid or missing player ID:", data.playerid);
+                return;
+            }
+
+            const _player = activePlayers.get(data.playerid);
+            _player.latestKeyTimeMs = timestampOnReceive;
 
             const netPosChange = myServerResource.netPosChangeFromKeyEvent(data.keyevent);
-            const suggestedPosition = myServerResource.moveFromPosition(activePlayers[data.playerid].position, netPosChange);
+            const suggestedPosition = myServerResource.moveFromPosition(_player.position, netPosChange);
             if (!myServerResource.isCoordinateObstructed(suggestedPosition.x, suggestedPosition.y)) {
-                activePlayers[data.playerid].position = suggestedPosition;
+                _player.position = suggestedPosition;
+                activePlayers.set(data.playerid, _player);
             }
-            
         }
 
         if (data.type === "pong") {
@@ -44,19 +52,21 @@ wss.on('connection', (ws) => {
         }
 
         if (data.type === "mouseclick") {
-            if (activePlayers[data.playerId] === undefined) return;
-            activePlayers[data.playerId].latestClickTimeMs = timestampOnReceive;
+            const player = activePlayers.get(data.playerId); // Corrected access
+            if (!player) return;
+            player.latestClickTimeMs = timestampOnReceive;
             console.log(`mouseclick received from client ${data.playerId} at x: ${data.mousePos.x} y: ${data.mousePos.y}`);
 
-            activePlayers[data.playerId].takeDamage(20); // testing damage, death
+            player.takeDamage(20); // testing damage, death
             return;
         }
 
         if (data.type === "mousemove") {
-            if (activePlayers[data.playerId] === undefined) return;
-            activePlayers[data.playerId].latestMouseMoveTimeMs = timestampOnReceive;
-            activePlayers[data.playerId].latestMouseAngle = data.latestMouseAngle;
-            activePlayers[data.playerId].latestMousePos = data.latestMousePos;
+            const player = activePlayers.get(data.playerId); // Corrected access
+            if (!player) return;
+            player.latestMouseMoveTimeMs = timestampOnReceive;
+            player.latestMouseAngle = data.latestMouseAngle;
+            player.latestMousePos = data.latestMousePos;
             //console.log(`mousemove received from client ${data.playerId} at x: ${data.latestMousePos.x} y: ${data.latestMousePos.y} angle: ${data.latestMouseAngle}`);
             return;
         }
@@ -65,39 +75,35 @@ wss.on('connection', (ws) => {
     // Remove the player when they disconnect
     ws.on('close', () => {
         console.log("player disconnected: " + ws.id);
-        delete activePlayers[ws.id];
-        console.log("active players: " + Object.keys(activePlayers).length);
+        activePlayers.delete(ws.id);
+        //console.log("active players: " + Object.keys(activePlayers).length);
         //broadcastPlayers();
     });
-
-    // Function to send updated players list to all clients
-
 });
+
+// Function to send updated players list to all clients
+
+
 
 // use setinterval to calculate server 60 hz tickrate and update clients framecount 
 
 
 function broadcastPlayers() { // hardwire broadcast to server tick interval? 
     const newFrameTime = Date.now();
-    const data = JSON.stringify({ type: 'broadcast', players: activePlayers });
+    const data = JSON.stringify({ type: 'broadcast', players: Array.from(activePlayers.values()) });
 
-    Object.keys(activePlayers).forEach(playerId => {
-        let currentPlayer = activePlayers[playerId];
-        if (currentPlayer.hp <= 0) 
-            {
-            activePlayers[playerId].alive = false;
+    activePlayers.forEach((currentPlayer, playerId) => {
+        if (currentPlayer.hp <= 0) {
+            currentPlayer.alive = false;
+            //console.log(">>> testing player dead", currentPlayer.id);
             // broadcast dead player
             // dead client needs to be forced to respawn
-        } 
-
+        }
+        currentPlayer.websocket.send(data);
     });
 
-    Object.keys(activePlayers).forEach(playerId => {
-        // console.log("broadcasting player data to player: " + players[playerId].id);
-        activePlayers[playerId].websocket.send(data);
-    });
 
-    console.log("broadcasting player data; " + data);
+    console.log("broadcasting; " + data);
 }
 
 
@@ -111,7 +117,7 @@ function ServerTickLoop() {
     serverTickCounter += 1;
 
     // Do server tick logic here
-    Object.keys(activePlayers).forEach(playerId => {
+    activePlayers.forEach((player, playerId) => {
         // should the server set the frame or the client?
         //players[playerId].currPlayerFrame += 1;
 

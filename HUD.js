@@ -9,6 +9,7 @@ export class HUDOverlay extends gameobject {
         this.color = color;
         this.myPlayerObj = myPlayerObj ?? undefined;
         this.pingMs = 0;
+        this.fps = Math.round(1000 / this.frameTimeMs);
         //this.position = position;
         this.counter = 0;
         this.mainSceneObj = mainSceneObj ?? undefined;
@@ -58,7 +59,8 @@ export class HUDOverlay extends gameobject {
 
         ctx.fillStyle = this.color;
         ctx.fillText(`Ping: ${this.pingMs} ms`, 0, this.position.y + 15);
-        ctx.fillText(`FPS: ${Math.round(1000 / this.frameTimeMs)}`, 0, this.position.y + 30);
+        ctx.fillText(`FPS: ${this.fps}`, 0, this.position.y + 30);
+        this.myPlayerObj.fps = this.fps;
         ctx.fillText(`Position: ${this.myPlayerObj.position.x} , ${this.myPlayerObj.position.y}`, 0, this.position.y + 45);
         ctx.fillText(`Mouse pos: ${this.myPlayerObj.latestMousePos.x} , ${this.myPlayerObj.latestMousePos.y}`, 0, this.position.y + 60);
         ctx.fillText(`Mouse angle: ${this.myPlayerObj.latestMouseAngle}°`, 0, this.position.y + 75);
