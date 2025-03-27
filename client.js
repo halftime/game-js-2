@@ -8,6 +8,9 @@ import { DEADFRAMES, HEARTBEATOKFRAMES } from './animations.js';
 import { gameobject } from './GameObject.js';
 import { heartOKSprite, heartCriticalSprite, heartImpactedSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite, bloodSpat } from './sprites.js';
 import { HUDOverlay } from './HUD.js';
+import { clientJoinReq } from './clientJoinReq.js';
+import { Camera } from './camera.js';
+import { playerMouseClicked, playerMouseMoved } from './clientMouseData.js';
 
 const serverPort = 5501;
 const serverUrl = `ws://localhost:${serverPort}`;
@@ -32,8 +35,8 @@ function getMousePos(canvas, event) {
     };
 }
 
-gameCanvas.width = rect.width * dpr;
-gameCanvas.height = rect.height * dpr;
+// gameCanvas.width = rect.width * dpr;
+// gameCanvas.height = rect.height * dpr;
 
 gameCanvas.style.width = `${rect.width}px`;
 gameCanvas.style.height = `${rect.height}px`;
@@ -48,39 +51,54 @@ mainScene.addChild(backgroundSprite);
 console.log("connecting to server: " + serverUrl);
 const socket = new WebSocket(serverUrl);
 
+socket.onopen = () => {
+    console.log("connected to server");
+    const myClientJoinReq = new clientJoinReq("testuser");
+    console.log("sending join request: " + JSON.stringify(myClientJoinReq));
+    socket.send(JSON.stringify(myClientJoinReq));
+};
+
+
 ['click', 'mousemove', 'keydown'].forEach(eventType => {
     document.addEventListener(eventType, (event) => {
+
+        if (myPlayerId === 0 || !myPlayerId) return;
         const mousePos = getMousePos(gameCanvas, event);
-        const payload = { type: eventType, mousePos: mousePos, playerid: myPlayerId, latestMouseAngle: 0, keyevent: event.key ?? "" };
 
-        console.log("event type: " + eventType);
-        console.log("event " + event);
-
-        if (eventType === 'mousemove') {
-            const myPlayer = allPlayers.get(myPlayerId);
-            payload.latestMouseAngle = Math.round(Math.atan2(mousePos.y - allPlayers.get(myPlayerId).position.y, mousePos.x - allPlayers.get(myPlayerId).position.x) * radToDeg * 100) / 100;
+        if (eventType === "mousemove") {
+            if (!allPlayers.has(myPlayerId)) return;
+            //console.log("mouse pos: " + JSON.stringify(mousePos));
+            const myPlayerPositon = allPlayers.get(myPlayerId).position ?? new Vector(0, 0);
+            const myMouseMoved = new playerMouseMoved(myPlayerId, mousePos, myPlayerPositon);
+            socket.send(JSON.stringify(myMouseMoved));
+            return;
         }
+        if (eventType === "click") {
+            if (!allPlayers.has(myPlayerId)) return;
+            const myPlayerPositon = allPlayers.get(myPlayerId).position ?? new Vector(0, 0);
+
+            console.log("DEBUG: mouse clicked at: " + JSON.stringify(mousePos));
+
+            const myMouseClicked = new playerMouseClicked(myPlayerId, mousePos, myPlayerPositon);
 
 
-        console.log("sending payload: " + JSON.stringify(payload));
-
-        socket.send(JSON.stringify(payload));
+            socket.send(JSON.stringify(myMouseClicked));
+            return;
+        }
     });
 });
-
-let pingMs = 0;
-let myPlayer = undefined;
 
 socket.onmessage = (message) => {
     const data = JSON.parse(message.data);
     if (data.type === 'newplayer') {
         console.log("my player object added: " + JSON.stringify(data.playerObj));
-        myPlayerId = data.playerObj.playerid;
-        console.log("my player id: " + myPlayerId);
-        // const newPlayer = new Player(data.playerObj.id, socket, data.playerObj.position.x, data.playerObj.position.y, data.playerObj.color);
-        // console.log("new player >>>>: " + JSON.stringify(newPlayer));
-        // allPlayers.set(data.playerId, newPlayer);
+        myPlayerId = data.playerObj.id;
 
+        const myPlayerObj = new Player(data.playerObj.id, null, data.playerObj.position.x, data.playerObj.position.y, data.playerObj.color, data.playerObj.username);
+
+        allPlayers.set(data.playerObj.id, myPlayerObj);
+        console.log(">>> my player id: " + myPlayerId);
+        console.log("allPlayers: " + JSON.stringify(Array.from(allPlayers.values())));
         return;
     }
 
@@ -91,34 +109,30 @@ socket.onmessage = (message) => {
     }
 
     if (data.type === 'broadcast') {
-        console.log("broadcast received: " + JSON.stringify(data.players));
+        //console.log("broadcast received: " + JSON.stringify(data.players));
 
         Array.from(data.players).forEach(playerObj => {
-            if (!allPlayers.has(playerObj.playerid)) {
+            if (!allPlayers.has(playerObj.id)) {
+                let newPlayer = new Player(playerObj.id, null, playerObj.position.x, playerObj.position.y, playerObj.color);
+                allPlayers.set(playerObj.id, newPlayer);
 
-                const newPlayer = new Player(playerObj.playerid, null, playerObj.position.x, playerObj.position.y, playerObj.color);
-                allPlayers.set(playerObj.playerid, newPlayer);
-                console.log(`Added new player to allPlayers: ${playerObj.playerid}`);
             } else {
-                const existingPlayer = allPlayers.get(playerObj.playerid);
-                existingPlayer.position = playerObj.position;
-                existingPlayer.alive = playerObj.alive;
-                existingPlayer.hp = playerObj.hp;
-                // existingPlayer.latestMousePos = playerObj.latestMousePos;
-                // existingPlayer.latestMouseAngle = playerObj.latestMouseAngle;
-                // existingPlayer.fps = playerObj.fps;
-                // existingPlayer.currPlayerFrame = playerObj.currPlayerFrame;
+                allPlayers.get(playerObj.id).position.x = playerObj.position.x;
+                allPlayers.get(playerObj.id).position.y = playerObj.position.y;
+                allPlayers.get(playerObj.id).alive = playerObj.alive;
+                allPlayers.get(playerObj.id).hp = playerObj.hp;
             }
-        });
 
-        // for (const _p in data.players) {
-        //     allPlayers.set(_p.id, data.players[_p.id]);
-        // }
+            if (allPlayers.has(playerObj.id)) {
+                mainScene.addChild(allPlayers.get(playerObj.id));
+            }
+
+        });
     }
 
     if (data.type === 'playerDead') {
         console.log("player dead: " + data.playerId);
-        mainScene.addChild(playerDeadSprite);
+        //mainScene.addChild(playerDeadSprite);
         //playerDead.drawAllFrames(ctx, allPlayers[data.playerId].position.x, allPlayers[data.playerId].position.y);
     }
 };
@@ -145,32 +159,34 @@ const draw = () => {
     const currentTime = performance.now();
     const deltaTime = currentTime - lastFrameTime;
     lastFrameTime = currentTime;
+
     gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+    gameCtx.save();
+
     mainScene.draw(gameCtx, 0, 0);
-    // draw inventory
-    // etc
 
-    allPlayers.keys().forEach(playerId => {
-        const _player = allPlayers.get(playerId);
+    if (allPlayers.has(myPlayerId)) {
+        const myPlayer = allPlayers.get(myPlayerId);
+        if (myPlayer && myPlayer.position) {
+            const offsetX = gameCanvas.width / 2 - myPlayer.position.x;
+            const offsetY = gameCanvas.height / 2 - myPlayer.position.y;
 
-        if (_player === undefined) return;
-        if (_player.alive === false) return;
-        // console.log("drawing player: " + _player.id + " " + _player.position.x + " , " + _player.position.y);
-        //console.log(">>>> test" + " " + _player.id + " " + _player.position.x + " , " + _player.position.y);
-        walkingLegsSprite.frame = _player.currPlayerFrame;
-        walkingLegsSprite.step(deltaTime);
-        walkingLegsSprite.offsetX = _player.position.x;
-        walkingLegsSprite.offsetY = _player.position.y;
-        walkingLegsSprite.rotationDeg = (_player.latestMouseAngle + 90) % 360;
-        //_player.addChild(walkingLegsSprite);
-        _player.draw(gameCtx, _player.position.x, _player.position.y);
+            gameCtx.save();
+            gameCtx.translate(offsetX, offsetY);
+        }
+    }
+
+    gameCtx.restore();
+    Array.from(allPlayers.values()).forEach(player => {
+        if (player && player.position && !player.alive) {
+            playerDeadSprite.draw(gameCtx, player.position.x, player.position.y);
+        }
     });
-    //console.log("delta frame time ms: " + deltaTime);
+
 
     uiCtx.clearRect(0, 0, uiCanvas.width, uiCanvas.height);
     const myHud = new HUDOverlay({ position: new Vector(0, uiCanvas.height - 100), myPlayerObj: allPlayers.get(myPlayerId), color: 'red', frameTimeMs: deltaTime, mainSceneObj: mainScene });
     myHud.draw(uiCtx, 0, uiCanvas.height - 100);
-    //bloodSpat.draw(uiCtx, 200, 200);
 }
 
 let gameLoop = new GameLoop(update, draw);

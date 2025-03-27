@@ -1,6 +1,7 @@
 import Player from './player.js';
 import { WebSocketServer } from 'ws';
 import { myServerResource } from './server-resource.js';
+import { playerMouseMoved } from './clientMouseData.js';
 // import { heartOKSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite } from './sprites.js';
 
 const wss = new WebSocketServer({ port: myServerResource.serverPort });
@@ -10,10 +11,16 @@ let activePlayers = new Map();
 wss.on('connection', (ws) => {
     const randomPlayerId = Math.floor(Math.random() * Number.MAX_SAFE_INTEGER);
     ws.id = randomPlayerId; // assign player id to ws object
-    let newPlayer = new Player(randomPlayerId, ws, 200, 200, Player.getRandomColor());
-    activePlayers.set(randomPlayerId, newPlayer);
-    console.log("new player connected: " + newPlayer.id);
-    ws.send(JSON.stringify({ type: 'newplayer', playerObj: newPlayer }));
+    const newSpawnPoint = myServerResource.getSpawnPoint();
+
+
+    // console.log("new player spawnpoint: " + JSON.stringify(newSpawnPoint));
+
+    // activePlayers.set(randomPlayerId, new Player(randomPlayerId, ws, newSpawnPoint.x, newSpawnPoint.y, Player.getRandomColor()));
+
+    // const newPlayer = activePlayers.get(randomPlayerId);
+    // console.log("new player connected: " + newPlayer.id);
+    // ws.send(JSON.stringify({ type: 'newplayer', playerObj: newPlayer }));
 
 
     // Handle incoming messages from the client
@@ -21,13 +28,31 @@ wss.on('connection', (ws) => {
         const timestampOnReceive = Date.now();
         const data = JSON.parse(message);
 
-        if (!activePlayers.has(data.playerid)) return;
+        let currPlayer = null;
+        switch (data.type) { // clientJoinReq
+            case "join":
+                console.log(">>> player requested to join: " + data.username);
+                console.log(">>> " + JSON.stringify(data));
 
-        const currPlayer = activePlayers.get(data.playerid);
-        console.log("current player: " + JSON.stringify(currPlayer));
-        console.log("received message from client: " + data.type + " playerid: " + data.playerid);
-        switch (data.type) {
+                const newPlayer = new Player(randomPlayerId, ws, newSpawnPoint.x, newSpawnPoint.y, Player.getRandomColor(), data.username);
+                activePlayers.set(randomPlayerId, newPlayer);
+
+                console.log("new player created: " + JSON.stringify(newPlayer));
+                // const serializablePlayer = {
+                //     id: newPlayer.id,
+                //     position: newPlayer.position,
+                //     color: newPlayer.color,
+                //     username: newPlayer.username,
+                //     hp: newPlayer.hp,
+                //     alive: newPlayer.alive
+                // };
+                ws.send(JSON.stringify({ type: 'newplayer', playerObj: newPlayer }));
+                return;
+
             case "keydown":
+                if (!data.playerid) return;
+                currPlayer = activePlayers.get(data.playerid);
+
                 currPlayer.latestKeyTimeMs = timestampOnReceive;
                 const netPosChange = myServerResource.netPosChangeFromKeyEvent(data.keyevent);
                 const suggestedPosition = myServerResource.moveFromPosition(currPlayer.position, netPosChange);
@@ -36,17 +61,29 @@ wss.on('connection', (ws) => {
                 }
                 return;
 
-            case "click":
+            case "mouseclicked": // object from clientMouseData.js
+                if (!data.playerid) return;
+                currPlayer = activePlayers.get(data.playerid);
+
+                console.log("mouseclicked received from client: " + JSON.stringify(data));
+
                 currPlayer.latestClickTimeMs = timestampOnReceive;
-                console.log(`mouseclick received from client ${data.playerid} at x: ${data.mousePos.x} y: ${data.mousePos.y}`);
+                console.log(`mouseclick received from client ${data.playerid} at x: ${data.mouseClickedPos.x} y: ${data.mouseClickedPos.y}`);
                 currPlayer.takeDamage(20); // testing damage, death
                 return;
 
-            case "mousemove":
+            case "mousemoved":
+                if (!data.playerid) return;
+                let clientMouseMoved = new playerMouseMoved(data.playerid, data.mouseMovedPos, data.playerPos);
+                console.log("mousemoved received from client: " + JSON.stringify(clientMouseMoved));
 
+                currPlayer = activePlayers.get(data.playerid);
                 currPlayer.latestMouseMoveTimeMs = timestampOnReceive;
-                currPlayer.latestMouseAngle = data.latestMouseAngle;
-                currPlayer.latestMousePos = data.latestMousePos;
+                // const dx = clientMouseMoved.mouseMovedPos.x - clientMouseMoved.playerPos.x;
+                // const dy = clientMouseMoved.mouseMovedPos.y - clientMouseMoved.playerPos.y;
+                // currPlayer.latestMouseAngle = Math.atan2(dy, dx) * (180 / Math.PI); // Convert radians to degrees
+                currPlayer.latestMousePos = clientMouseMoved.mouseMovedPos;
+                currPlayer.latestMouseAngle = clientMouseMoved.calculateMouseAngle();
                 return;
 
             case "pong":
@@ -65,35 +102,21 @@ wss.on('connection', (ws) => {
     ws.on('close', () => {
         console.log("player disconnected: " + ws.id);
         activePlayers.delete(ws.id);
-        //console.log("active players: " + Object.keys(activePlayers).length);
-        //broadcastPlayers();
     });
 });
 
-// Function to send updated players list to all clients
-
-
-
 // use setinterval to calculate server 60 hz tickrate and update clients framecount 
-
 
 function broadcastPlayers() { // hardwire broadcast to server tick interval? 
     const newFrameTime = Date.now();
     const data = JSON.stringify({ type: 'broadcast', players: Array.from(activePlayers.values()) });
 
-    activePlayers.forEach((currentPlayer, playerId) => {
-        if (currentPlayer.hp <= 0) {
-            currentPlayer.alive = false;
-            //console.log(">>> testing player dead", currentPlayer.id);
-            // broadcast dead player
-            // dead client needs to be forced to respawn
-        }
-        currentPlayer.websocket.send(data);
+    activePlayers.values().forEach(p => {
+        p.websocket.send(data);
     });
 
-
-    // console.log("broadcasting; " + data);
-}
+    // console.log("broadcasting players: " + data);
+};
 
 
 const targetInterval = 1000 / 60; // 60 ticks per second

@@ -1,22 +1,31 @@
 import { Vector } from "./grid.js";
 import fs from 'fs';
 
-
+const spawnsXgenStudioMap = JSON.parse(fs.readFileSync('./map/spawn_points.json', 'utf-8'));
 const wallsXgenStudioMap = JSON.parse(fs.readFileSync('./map/not_walkables.json', 'utf-8'));
 
 class ServerResource {
     serverPort = 5501;
     constructor() {
         this.wallSquares = [];
+        this.spawns = [];
         for (let i = 0; i < wallsXgenStudioMap.length; i++) {
             const wall = wallsXgenStudioMap.at(i);
-            this.wallSquares.push([new Vector(wall[0], wall[1]),
-            new Vector(wall[2], wall[3])]); // [top left, bottom right]
+            this.wallSquares.push([new Vector(wall[0], wall[1]), new Vector(wall[2], wall[3])]); // [top left, bottom right]
         }
-
+        for (let i = 0; i < spawnsXgenStudioMap.length; i++) {
+            const spawn = spawnsXgenStudioMap.at(i);
+            this.spawns.push(new Vector(spawn[0], spawn[1]));
+        }
         this.obstructedMap = this.generateCoordinateMap();
         console.log(">>> loaded walls: " + this.wallSquares.length);
         console.log(">>> collision map coordinates: " + this.obstructedMap.size);
+    }
+
+    getSpawnPoint() {
+        return this.spawns[0];
+        // debugging, return random spawn point
+        return this.spawns[Math.floor(Math.random() * this.spawns.length)];
     }
 
     netPosChangeFromKeyEvent(keyEvent)

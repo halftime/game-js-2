@@ -7,16 +7,18 @@ import { walkingLegsSprite } from './sprites.js';
 
 
 export default class Player extends gameobject {
-    constructor(playerid, websocket = null, x, y, color = "black") {
+    constructor(playerid, websocket, x, y, color = "black", username) {
         super({id: playerid, position: new Vector(x, y) });
 
-        Object.defineProperty(this, 'websocket', {
-            value: websocket,
-            writable: true,  // You can modify it later
-            enumerable: false // Exclude websocket from JSON.stringify
-        });
+         Object.defineProperty(this, 'websocket', {
+             value: websocket,
+             writable: true,  // You can modify it later
+             enumerable: false // Exclude websocket from JSON.stringify
+         });
 
-        this.playerid = playerid;
+        //this.playerid = playerid;
+        this.username = username;
+        this.websocket = websocket; // websocket used by SERVER to send messages to CLIENT
         this.hp = 100;
         this.alive = true;
         this.color = color;

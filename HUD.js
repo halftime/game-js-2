@@ -70,28 +70,22 @@ export class HUDOverlay extends gameobject {
             this.startDeathAnimation(ctx);
         }
 
-        //ctx.translate(0, 0); 
+      //  ctx.save();
+      //  ctx.translate(10, 10);
+
+        ctx.translate(0, 0); 
         if (this.myPlayerObj.hp >= 75) {
             this.mainSceneObj.addChild(heartOKSprite);
-            this.mainSceneObj.removechild(heartCriticalSprite);
-            this.mainSceneObj.removechild(heartImpactedSprite);
-            heartOKSprite.draw(ctx, 0, 0);
             return;
         }
-
         if (this.myPlayerObj.hp < 75 && this.myPlayerObj.hp > 25) {
             this.mainSceneObj.addChild(heartImpactedSprite);
-            this.mainSceneObj.removechild(heartOKSprite);
-            this.mainSceneObj.removechild(heartCriticalSprite);
-            heartImpactedSprite.draw(ctx, 0, 0);
             return;
         }
         if (this.myPlayerObj.hp <= 25 && this.myPlayerObj.hp > 0) {
             this.mainSceneObj.addChild(heartCriticalSprite);
-            this.mainSceneObj.removechild(heartOKSprite);
-            this.mainSceneObj.removechild(heartImpactedSprite);
-            heartCriticalSprite.draw(ctx, 0, 0);
             return;
         }
+
     }
 }
