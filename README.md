@@ -16,7 +16,7 @@ npx http-server -p 5501
 ### ToDo Server
 | Feature | Prio | State | Notes |
 |---|---|---|---|
-| random player spawns | high | in prog | 4 original spawn locations *currently forced to map[0] which is top left spawn |
+| random player spawns | high | in prog | 4 original spawn locations ~~*currently forced to map[0] which is top left spawn~~ |
 | weapon spawning | high | in prog | . |
 | collision check | high | in prog | basic serverside hashmap (X, Y) for fast lookup |
 | dmg handling | high | in prog | . |
@@ -33,7 +33,7 @@ npx http-server -p 5501
 | Feature | Prio | State | Notes |
 |---|---|---|---|
 | Hud | high | ok | UI seperate from game Canvas |
-| Player camera | high | . | following the player around the map |
+| Player "camera" | high | ok | following the player around the map |
 | scoreboard display | high | . | hotkey?, draw on uiCtx? | 
 | chatbox | high | . | . |
 | dead scene (sprite) | high | in prog | . |
