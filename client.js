@@ -41,12 +41,7 @@ let allPlayers = new Map();
 let myPlayerId = 0;
 
 let mainScene = new gameobject({ position: new Vector(0, 0), id: 'mainscene' });
-
-
 let uiScene = new gameobject({ position: new Vector(0, 0), id: 'uiscene' });
-
-//const myPlayerCamera = new Camera();
-//mainScene.addChild(myPlayerCamera);
 
 // Establish a connection to the server
 console.log("connecting to server: " + serverUrl);
@@ -62,78 +57,75 @@ socket.onopen = () => {
 
 ['click', 'mousemove', 'keydown'].forEach(eventType => {
     document.addEventListener(eventType, (event) => {
-
+        if (getmyPlayerOrNull == null || getmyPlayerOrNull() == null) return;
         if (myPlayerId === 0 || !myPlayerId) return;
         const mousePos = getMousePos(gameCanvas, event);
         const myPlayerPositon = allPlayers.get(myPlayerId).position ?? new Vector(0, 0);
 
-        if (eventType === "mousemove") {
-            if (!allPlayers.has(myPlayerId)) return;
-            const myMouseMoved = new playerMouseMoved(myPlayerId, mousePos, myPlayerPositon);
-            socket.send(JSON.stringify(myMouseMoved));
-            return;
-        }
-        if (eventType === "click") {
-            if (!allPlayers.has(myPlayerId)) return;
-            const myMouseClicked = new playerMouseClicked(myPlayerId, mousePos, myPlayerPositon);
-            socket.send(JSON.stringify(myMouseClicked));
-            return;
-        }
-
-        if (eventType === "keydown") {
-            //console.log("key pressed: " + event.key);
-            socket.send(JSON.stringify({ type: 'keydown', keyevent: event.key, playerid: myPlayerId }));
-            return;
+        switch (eventType) {
+            case "mousemove":
+                socket.send(JSON.stringify(new playerMouseMoved(myPlayerId, mousePos, myPlayerPositon)));
+                break;
+            case "click":
+                socket.send(JSON.stringify(new playerMouseClicked(myPlayerId, mousePos, myPlayerPositon)));
+                break;
+            case "keydown":
+                socket.send(JSON.stringify({ type: 'keydown', keyevent: event.key, playerid: myPlayerId }));
+                break;
         }
     });
 });
 
 socket.onmessage = (message) => {
     const data = JSON.parse(message.data);
-    if (data.type === 'newplayer') {
-        console.log("my player object added: " + JSON.stringify(data.playerObj));
-        myPlayerId = data.playerObj.id;
+    switch (data.type) {
+        case 'newplayer':
+            console.log("my player object added: " + JSON.stringify(data.playerObj));
+            myPlayerId = data.playerObj.id;
 
-        const myPlayerObj = new Player(data.playerObj.id, null, data.playerObj.position.x, data.playerObj.position.y, data.playerObj.color, data.playerObj.username);
+            const myPlayerObj = new Player(data.playerObj.id, null, data.playerObj.position.x, data.playerObj.position.y, data.playerObj.color, data.playerObj.username);
 
-        allPlayers.set(data.playerObj.id, myPlayerObj);
-        console.log(">>> my player id: " + myPlayerId);
-        console.log("allPlayers: " + JSON.stringify(Array.from(allPlayers.values())));
-        return;
-    }
+            allPlayers.set(data.playerObj.id, myPlayerObj);
+            console.log(">>> my player id: " + myPlayerId);
+            console.log("allPlayers: " + JSON.stringify(Array.from(allPlayers.values())));
+            break;
 
-    if (data.type === 'ping') { // server sends ping challange, client responds with pong
-        console.log("received ws ping: " + data.ping.challangeId);
-        let myPingChallange = new PingChallange(data.ping.challangeId, data.ping.initTimestamp, Date.now());
-        socket.send(JSON.stringify({ type: 'pong', pong: myPingChallange }));
-    }
+        case 'ping': // server sends ping challenge, client responds with pong
+            console.log("received ws ping: " + data.ping.challangeId);
+            let myPingChallange = new PingChallange(data.ping.challangeId, data.ping.initTimestamp, Date.now());
+            socket.send(JSON.stringify({ type: 'pong', pong: myPingChallange }));
+            break;
 
-    if (data.type === 'broadcast') {
-        //console.log("broadcast received: " + JSON.stringify(data.players));
+        case 'broadcast':
+            //console.log("broadcast received: " + JSON.stringify(data.players));
 
-        Array.from(data.players).forEach(playerObj => {
-            if (!allPlayers.has(playerObj.id)) {
-                let newPlayer = new Player(playerObj.id, null, playerObj.position.x, playerObj.position.y, playerObj.color);
-                allPlayers.set(playerObj.id, newPlayer);
-                mainScene.addChild(newPlayer);
-            } else {
-                const existingPlayer = allPlayers.get(playerObj.id);
-                existingPlayer.position.x = playerObj.position.x;
-                existingPlayer.position.y = playerObj.position.y;
-                existingPlayer.alive = playerObj.alive;
-                existingPlayer.hp = playerObj.hp;
+            Array.from(data.players).forEach(playerObj => {
+                if (!allPlayers.has(playerObj.id)) {
+                    let newPlayer = new Player(playerObj.id, null, playerObj.position.x, playerObj.position.y, playerObj.color);
+                    allPlayers.set(playerObj.id, newPlayer);
+                    mainScene.addChild(newPlayer);
+                } else {
+                    const existingPlayer = allPlayers.get(playerObj.id);
+                    existingPlayer.position.x = playerObj.position.x;
+                    existingPlayer.position.y = playerObj.position.y;
+                    existingPlayer.alive = playerObj.alive;
+                    existingPlayer.hp = playerObj.hp;
 
-                if (!mainScene.children.has(existingPlayer)) {
-                    mainScene.addChild(existingPlayer);
+                    if (!mainScene.children.has(existingPlayer)) {
+                        mainScene.addChild(existingPlayer);
+                    }
+
+                    if (existingPlayer.hp <= 0 || !existingPlayer.alive) {
+                        existingPlayer.alive = false;
+                        mainScene.removeChild(existingPlayer);
+                    }
                 }
-            }
-        });
-    }
+            });
+            break;
 
-    if (data.type === 'playerDead') {
-        console.log("player dead: " + data.playerId);
-        //mainScene.addChild(playerDeadSprite);
-        //playerDead.drawAllFrames(ctx, allPlayers[data.playerId].position.x, allPlayers[data.playerId].position.y);
+        default:
+            console.warn(`Unhandled message type: ${data.type}`);
+            break;
     }
 };
 
@@ -149,7 +141,6 @@ const update = (delta) => {
     uiScene.stepEntry(delta, uiScene);
 }
 
-
 let lastFrameTime = performance.now();
 const draw = () => {
     let myPlayer = getmyPlayerOrNull();
@@ -159,25 +150,22 @@ const draw = () => {
     lastFrameTime = currentTime;
 
     // Clear the game canvas and save the context
-    
+    gameCtx.clearRect(0, 0, 2000, 2000); gameCtx.save();
 
-    gameCtx.clearRect(0, 0, 2000, 2000);
-    gameCtx.save();
-    //gameMapSprite.draw(gameCtx, -575, -395 );
-    
-    gameCtx.translate(-myPlayer.position.x + gameCanvas.width / 2, -myPlayer.position.y + gameCanvas.height / 2);
+    const xTranslation = Math.min(0, -myPlayer.position.x + gameCanvas.width / 2);
+    const yTranslation = Math.min(0, -myPlayer.position.y + gameCanvas.height / 2);
+
+    //console.log("xTranslation: " + xTranslation + " yTranslation: " + yTranslation);
+
+    gameCtx.translate(xTranslation, yTranslation);
     gameMapSprite.drawImage(gameCtx, 0, 0, 0, 0);
-    
     mainScene.draw(gameCtx, 0, 0);
-
     gameCtx.restore();
 
-
-
-    uiCtx.clearRect(0, 0, 2000, 2000);
+    // UI
+    uiCtx.clearRect(0, 0, 2000, 2000); uiCtx.save();
     let myHud = new HUDOverlay({ position: myPlayer.position, color: 'red', frameTimeMs: deltaTime, hitPoints: myPlayer.hp });
     myHud.drawHudTexts(uiCtx);
-
     uiScene.removeChild(heartOKSprite);
     uiScene.removeChild(heartCriticalSprite);
     uiScene.removeChild(heartImpactedSprite);
