@@ -4,6 +4,7 @@ import { Vector } from './grid.js';
 import { FrameIndexPattern } from './FrameIndexPattern.js';
 import { HEARTBEATOKFRAMES, DEADFRAMES, LEGFRAMES, BACKGROUNDFRAME  } from './animations.js';
 
+
 export const heartOKSprite = new Sprite({
     resource: resources.images.HUD_hb_normal,
     hFrames: 28,
@@ -42,6 +43,8 @@ export const heartCriticalSprite = new Sprite({
     animationConfig: new FrameIndexPattern(HEARTBEATOKFRAMES), 
     id: 'heartCriticalSprite'
 });
+
+export const heartBeatSpriteslist = [heartOKSprite, heartImpactedSprite, heartCriticalSprite];
 
 
 export const playerDeadSprite = new Sprite({
@@ -87,6 +90,7 @@ export const bloodSpat = new Sprite({
     hFrames: 10, vFrames: 1,
     position: new Vector(0, 0),
     frame: 0,
-    scale: 1, rotationDeg: 0
+    scale: 1, rotationDeg: 0,
+    id: 'bloodSpatSprite'
 });
 

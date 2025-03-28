@@ -6,7 +6,7 @@ import { GameLoop } from './gameloop.js';
 import { FrameIndexPattern } from './FrameIndexPattern.js';
 import { DEADFRAMES, HEARTBEATOKFRAMES } from './animations.js';
 import { gameobject } from './GameObject.js';
-import { heartOKSprite, heartCriticalSprite, heartImpactedSprite, walkingLegsSprite, gameMapSprite, playerDeadSprite, bloodSpat } from './sprites.js';
+import { heartOKSprite, heartCriticalSprite, heartImpactedSprite, walkingLegsSprite, gameMapSprite, playerDeadSprite, bloodSpat, heartBeatSpriteslist } from './sprites.js';
 import { HUDOverlay } from './HUD.js';
 import { clientJoinReq } from './clientJoinReq.js';
 import { Camera } from './camera.js';
@@ -62,7 +62,12 @@ socket.onopen = () => {
         const mousePos = getMousePos(gameCanvas, event);
         const myPlayerPositon = allPlayers.get(myPlayerId).position ?? new Vector(0, 0);
 
-        switch (eventType) {
+        console.log(event);
+        console.log(JSON.stringify(event));
+
+        console.log(" ... " + eventType);
+
+        switch (event.type) {
             case "mousemove":
                 socket.send(JSON.stringify(new playerMouseMoved(myPlayerId, mousePos, myPlayerPositon)));
                 break;
@@ -166,20 +171,18 @@ const draw = () => {
     uiCtx.clearRect(0, 0, 2000, 2000); uiCtx.save();
     let myHud = new HUDOverlay({ position: myPlayer.position, color: 'red', frameTimeMs: deltaTime, hitPoints: myPlayer.hp });
     myHud.drawHudTexts(uiCtx);
-    uiScene.removeChild(heartOKSprite);
-    uiScene.removeChild(heartCriticalSprite);
-    uiScene.removeChild(heartImpactedSprite);
+
+    heartBeatSpriteslist.forEach(hbs => { uiScene.removeChild(hbs); });
 
     if (myPlayer.hp == 100) {
         uiScene.addChild(heartOKSprite);
     }
-    else if (myPlayer.hp < 100 && myPlayer.hp > 50) {
+    else if (myPlayer.hp <= 50) {
+        uiScene.addChild(heartCriticalSprite);
+    }
+    else {
         uiScene.addChild(heartImpactedSprite);
     }
-    else
-        if (myPlayer.hp < 50) {
-            uiScene.addChild(heartCriticalSprite);
-        };
 
     uiScene.draw(uiCtx, 0, 0);
 };

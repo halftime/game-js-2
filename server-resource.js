@@ -23,8 +23,7 @@ class ServerResource {
     }
 
     getSpawnPoint() {
-        return this.spawns[0];
-        // debugging, return random spawn point
+       // return this.spawns[0]; //debugging, return random spawn point
         return this.spawns[Math.floor(Math.random() * this.spawns.length)];
     }
 
