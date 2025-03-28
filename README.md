@@ -25,18 +25,19 @@ npx http-server -p 5501
 | player scoreboard , stats | mid | . | . |
 | control players' sprites from serverside | low | . | (client) keyUp event => server sets client sprite frame UP |
 | servertick to control sprite steps | low | . | 30, 60, 120 hz server tick? |
-| dont crash on malformed client comms | hi | . | . |
+| error handling sockets, etc | mid | . | maybe do error handling after porting to TS |
 | migrate to ts ??? | low | . | ~~just write a game engine they said, it will be fun they said~~ | 
 
 
 ### ToDo Client
 | Feature | Prio | State | Notes |
 |---|---|---|---|
-| Hud | high | ok | uiCanvas & uiCtx seperated from gameCanvas & gameCtx |
+| Hud | high | ok | UI seperate from game Canvas |
+| Player camera | high | . | following the player around the map |
 | scoreboard display | high | . | hotkey?, draw on uiCtx? | 
 | chatbox | high | . | . |
 | dead scene (sprite) | high | in prog | . |
-| respawning | high | in prog | . | 
+| (re)spawning | high | in prog | . | 
 | smoother movement? | low | . | . |
 | actual multi pc multiplayer testing | mid | . |
 | audio | low | . | . |
