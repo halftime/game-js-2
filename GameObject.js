@@ -28,11 +28,8 @@ export class gameobject {
         const drawPosY = this.position.y + y;
 
         for (const child of this.children.values()) {
-            // if (child === undefined) { return; }
             child.offsetX = -x;
             child.offsetY = -y;
-
-            console.log("drawing, " , this.id , drawPosX, drawPosY);
             child.draw(ctx, drawPosX, drawPosY);
         };
         this.drawImage(ctx, drawPosX, drawPosY);

@@ -62,11 +62,6 @@ socket.onopen = () => {
         const mousePos = getMousePos(gameCanvas, event);
         const myPlayerPositon = allPlayers.get(myPlayerId).position ?? new Vector(0, 0);
 
-        console.log(event);
-        console.log(JSON.stringify(event));
-
-        console.log(" ... " + eventType);
-
         switch (event.type) {
             case "mousemove":
                 socket.send(JSON.stringify(new playerMouseMoved(myPlayerId, mousePos, myPlayerPositon)));

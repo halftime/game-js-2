@@ -71,7 +71,7 @@ export class Sprite extends gameobject {
         const centerX = x + this.position.x + (frameSizeX * this.scale) / 2;
         const centerY = y + this.position.y + (frameSizeY * this.scale) / 2; // Use this.position.y instead of this.position.x
 
-        console.log("drawing sprite: " + this.id + " at: " + centerX + " , " + centerY);
+        //console.log("drawing sprite: " + this.id + " at: " + centerX + " , " + centerY);
 
         // Move the origin to the center of the sprite for proper rotation
         ctx.translate(centerX, centerY);
