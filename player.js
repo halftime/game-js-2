@@ -3,7 +3,7 @@ import { Vector } from "./grid.js";
 //import { myServerResource } from "./server-resource.js";
 import { gameobject } from './GameObject.js';
 import { walkingLegsSprite } from './sprites.js';
-
+import { myEvents } from "./events.js";
 
 
 export default class Player extends gameobject {
@@ -38,6 +38,13 @@ export default class Player extends gameobject {
 
         this.wasAlive = true;
         this.prevKeyEvent = undefined;
+
+        this.prevPosition = new Vector(0, 0);
+
+        console.log("Player created: " + JSON.stringify(this));
+        console.log(".positon: " + JSON.stringify(this.position));
+        console.log("prev position: " + JSON.stringify(this.prevPosition));
+
     }
 
     takeDamage(damage) {
@@ -71,6 +78,16 @@ export default class Player extends gameobject {
         ctx.arc(this.position.x, this.position.y, 10, 10, 0, 2 * Math.PI);
         ctx.fill();
         ctx.closePath();
+        this.tryEmitPosition(); // emit position if it has changed, also updates prevPosition
+    }
+
+    tryEmitPosition() {
+        if (this.position.x === this.prevPosition.x && this.position.y === this.prevPosition.y) {
+            return;
+        }
+        this.prevPosition = new Vector(this.position.x, this.position.y);
+        console.log("position EMITTED" + JSON.stringify(this.position));
+        myEvents.emit('playerposition', this.position);
     }
 
 

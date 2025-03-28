@@ -8,7 +8,7 @@ export class playerMouseEvent{
         this.playerPos = playerPos
         this.clientTimestamp = Date.now();
 
-        console.log("playerMouseEvent: " + JSON.stringify(this));
+        //console.log("playerMouseEvent: " + JSON.stringify(this));
     }
 
     calculateMouseAngle (){

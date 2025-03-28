@@ -11,6 +11,7 @@ import { HUDOverlay } from './HUD.js';
 import { clientJoinReq } from './clientJoinReq.js';
 import { Camera } from './camera.js';
 import { playerMouseClicked, playerMouseMoved } from './clientMouseData.js';
+import { myEvents } from './events.js';
 
 const serverPort = 5501;
 const serverUrl = `ws://localhost:${serverPort}`;
@@ -43,6 +44,10 @@ let mainScene = new gameobject({ position: new Vector(0, 0), id: 'mainscene' });
 mainScene.addChild(backgroundSprite);
 let uiScene = new gameobject({ position: new Vector(0, 0), id: 'uiscene' });
 
+myEvents.on("playerposition", mainScene, (position) => {
+    console.log("MYEVENTS TEST triggered: " + JSON.stringify(position));
+});
+
 //uiScene.addChild(myHud);
 
 // Establish a connection to the server
@@ -62,26 +67,23 @@ socket.onopen = () => {
 
         if (myPlayerId === 0 || !myPlayerId) return;
         const mousePos = getMousePos(gameCanvas, event);
+        const myPlayerPositon = allPlayers.get(myPlayerId).position ?? new Vector(0, 0);
 
         if (eventType === "mousemove") {
             if (!allPlayers.has(myPlayerId)) return;
-            //console.log("mouse pos: " + JSON.stringify(mousePos));
-            const myPlayerPositon = allPlayers.get(myPlayerId).position ?? new Vector(0, 0);
             const myMouseMoved = new playerMouseMoved(myPlayerId, mousePos, myPlayerPositon);
             socket.send(JSON.stringify(myMouseMoved));
             return;
         }
         if (eventType === "click") {
             if (!allPlayers.has(myPlayerId)) return;
-            const myPlayerPositon = allPlayers.get(myPlayerId).position ?? new Vector(0, 0);
-            console.log("DEBUG: mouse clicked at: " + JSON.stringify(mousePos));
             const myMouseClicked = new playerMouseClicked(myPlayerId, mousePos, myPlayerPositon);
             socket.send(JSON.stringify(myMouseClicked));
             return;
         }
 
         if (eventType === "keydown") {
-            console.log("key pressed: " + event.key);
+            //console.log("key pressed: " + event.key);
             socket.send(JSON.stringify({ type: 'keydown', keyevent: event.key, playerid: myPlayerId }));
             return;
         }
@@ -115,18 +117,18 @@ socket.onmessage = (message) => {
             if (!allPlayers.has(playerObj.id)) {
                 let newPlayer = new Player(playerObj.id, null, playerObj.position.x, playerObj.position.y, playerObj.color);
                 allPlayers.set(playerObj.id, newPlayer);
-
+                mainScene.addChild(newPlayer);
             } else {
-                allPlayers.get(playerObj.id).position.x = playerObj.position.x;
-                allPlayers.get(playerObj.id).position.y = playerObj.position.y;
-                allPlayers.get(playerObj.id).alive = playerObj.alive;
-                allPlayers.get(playerObj.id).hp = playerObj.hp;
-            }
+                const existingPlayer = allPlayers.get(playerObj.id);
+                existingPlayer.position.x = playerObj.position.x;
+                existingPlayer.position.y = playerObj.position.y;
+                existingPlayer.alive = playerObj.alive;
+                existingPlayer.hp = playerObj.hp;
 
-            if (allPlayers.has(playerObj.id)) {
-                mainScene.addChild(allPlayers.get(playerObj.id));
+                if (!mainScene.children.has(existingPlayer)) {
+                    mainScene.addChild(existingPlayer);
+                }
             }
-
         });
     }
 
