@@ -65,7 +65,7 @@ export default class Player extends gameobject {
     //     }
     // }
 
-    drawImage(ctx, x, y) {
+    drawImage(ctx, x, y) { // override, draw player as circle
         ctx.beginPath();
         ctx.fillStyle = this.color;
         ctx.arc(this.position.x, this.position.y, 10, 10, 0, 2 * Math.PI);

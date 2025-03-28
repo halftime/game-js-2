@@ -23,9 +23,8 @@ const uiCanvas = document.getElementById('uiCanvas');
 const gameCtx = gameCanvas.getContext('2d');
 const uiCtx = uiCanvas.getContext('2d');
 
-const dpr = window.devicePixelRatio;
-gameCtx.scale(dpr, dpr);
-const rect = gameCanvas.getBoundingClientRect();
+gameCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+uiCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
 
 function getMousePos(canvas, event) {
     const rect = canvas.getBoundingClientRect();
@@ -35,17 +34,16 @@ function getMousePos(canvas, event) {
     };
 }
 
-// gameCanvas.width = rect.width * dpr;
-// gameCanvas.height = rect.height * dpr;
 
-gameCanvas.style.width = `${rect.width}px`;
-gameCanvas.style.height = `${rect.height}px`;
 
 let allPlayers = new Map();
 let myPlayerId = 0;
 
-const mainScene = new gameobject({ position: new Vector(0, 0), id: 'mainscene' });
+let mainScene = new gameobject({ position: new Vector(0, 0), id: 'mainscene' });
 mainScene.addChild(backgroundSprite);
+let uiScene = new gameobject({ position: new Vector(0, 0), id: 'uiscene' });
+
+//uiScene.addChild(myHud);
 
 // Establish a connection to the server
 console.log("connecting to server: " + serverUrl);
@@ -76,13 +74,15 @@ socket.onopen = () => {
         if (eventType === "click") {
             if (!allPlayers.has(myPlayerId)) return;
             const myPlayerPositon = allPlayers.get(myPlayerId).position ?? new Vector(0, 0);
-
             console.log("DEBUG: mouse clicked at: " + JSON.stringify(mousePos));
-
             const myMouseClicked = new playerMouseClicked(myPlayerId, mousePos, myPlayerPositon);
-
-
             socket.send(JSON.stringify(myMouseClicked));
+            return;
+        }
+
+        if (eventType === "keydown") {
+            console.log("key pressed: " + event.key);
+            socket.send(JSON.stringify({ type: 'keydown', keyevent: event.key, playerid: myPlayerId }));
             return;
         }
     });
@@ -142,52 +142,65 @@ socket.onmessage = (message) => {
 
 const update = (delta) => {
     mainScene.stepEntry(delta, mainScene);
+    uiScene.stepEntry(delta, uiScene);
 }
 
 
 // const heroPlayer = new Player({ position: new Vector(100, 100), color: 'blue' });
 // mainScene.addChild(heroPlayer);
 
-let lastFrameTime = performance.now();
+
 
 
 // myHud.drawImage(ctx, 0, canvas.height - 100);
 
+function getmyPlayerOrNull() {
+    if (allPlayers.has(myPlayerId)) {
+        return allPlayers.get(myPlayerId);
+    }
+    return undefined;
+}
 
-
+let lastFrameTime = performance.now();
 const draw = () => {
+    let myPlayer = getmyPlayerOrNull();
+    if (!myPlayer) return;
     const currentTime = performance.now();
     const deltaTime = currentTime - lastFrameTime;
     lastFrameTime = currentTime;
 
-    gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+    // Clear the game canvas and save the context
+    gameCtx.clearRect(0, 0, 2000, 2000);
     gameCtx.save();
 
+    gameCtx.translate(gameCanvas.width / 2, gameCanvas.height / 2);
+    gameCtx.translate(-myPlayer.position.x, -myPlayer.position.y);
+
     mainScene.draw(gameCtx, 0, 0);
-
-    if (allPlayers.has(myPlayerId)) {
-        const myPlayer = allPlayers.get(myPlayerId);
-        if (myPlayer && myPlayer.position) {
-            const offsetX = gameCanvas.width / 2 - myPlayer.position.x;
-            const offsetY = gameCanvas.height / 2 - myPlayer.position.y;
-
-            gameCtx.save();
-            gameCtx.translate(offsetX, offsetY);
-        }
-    }
-
     gameCtx.restore();
-    Array.from(allPlayers.values()).forEach(player => {
-        if (player && player.position && !player.alive) {
-            playerDeadSprite.draw(gameCtx, player.position.x, player.position.y);
-        }
-    });
 
+    uiCtx.clearRect(0, 0, 2000, 2000);
 
-    uiCtx.clearRect(0, 0, uiCanvas.width, uiCanvas.height);
-    const myHud = new HUDOverlay({ position: new Vector(0, uiCanvas.height - 100), myPlayerObj: allPlayers.get(myPlayerId), color: 'red', frameTimeMs: deltaTime, mainSceneObj: mainScene });
-    myHud.draw(uiCtx, 0, uiCanvas.height - 100);
-}
+    let myHud = new HUDOverlay({ position: myPlayer.position, color: 'red', frameTimeMs: deltaTime, hitPoints: myPlayer.hp });
+    myHud.drawHudTexts(uiCtx);
+
+    uiScene.removeChild(heartOKSprite);
+    uiScene.removeChild(heartCriticalSprite);
+    uiScene.removeChild(heartImpactedSprite);
+
+    if (myPlayer.hp == 100) {
+        uiScene.addChild(heartOKSprite);
+    }
+    else if (myPlayer.hp < 100 && myPlayer.hp > 50) {
+        uiScene.addChild(heartImpactedSprite);
+    }
+    else
+    if (myPlayer.hp < 50) {
+        uiScene.addChild(heartCriticalSprite);
+    };
+
+    uiScene.draw(uiCtx, 0, 0);
+};
 
 let gameLoop = new GameLoop(update, draw);
 gameLoop.start();

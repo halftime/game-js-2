@@ -4,12 +4,12 @@ export class gameobject {
     constructor({ position, id }) {
         this.id = id ?? Math.random().toString();
         this.position = position ?? new Vector(0, 0);
-        this.children = {};
-        Object.defineProperty(this, 'children', {
-            value: new Map(),
-            writable: true,  // You can modify it later
-            enumerable: true // false would Exclude children from JSON.stringify, ie not being broadcasted to clients
-        });
+        this.children = {}; // DO NOT redefine this as a MAP
+        // Object.defineProperty(this, 'children', {
+        //     value: new Map(),
+        //     writable: true,  // You can modify it later
+        //     enumerable: true // false would Exclude children from JSON.stringify, ie not being broadcasted to clients
+        // });
     }
 
     stepEntry(delta, root) {
@@ -49,7 +49,7 @@ export class gameobject {
         this.children[gameObject.id] = gameObject;
     }
 
-    removechild(gameObject) {
+    removeChild(gameObject) {
         if (this.children[gameObject.id]) {
             delete this.children[gameObject.id];
         }

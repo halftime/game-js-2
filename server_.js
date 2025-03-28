@@ -68,7 +68,7 @@ wss.on('connection', (ws) => {
                 console.log("mouseclicked received from client: " + JSON.stringify(data));
 
                 currPlayer.latestClickTimeMs = timestampOnReceive;
-                console.log(`mouseclick received from client ${data.playerid} at x: ${data.mouseClickedPos.x} y: ${data.mouseClickedPos.y}`);
+                console.log(`mouseclick received from client ${data.playerid} at x: ${data.mousePos.x} y: ${data.mousePos.y}`);
                 currPlayer.takeDamage(20); // testing damage, death
                 return;
 
@@ -83,7 +83,7 @@ wss.on('connection', (ws) => {
                 // const dy = clientMouseMoved.mouseMovedPos.y - clientMouseMoved.playerPos.y;
                 // currPlayer.latestMouseAngle = Math.atan2(dy, dx) * (180 / Math.PI); // Convert radians to degrees
                 currPlayer.latestMousePos = clientMouseMoved.mouseMovedPos;
-                currPlayer.latestMouseAngle = clientMouseMoved.calculateMouseAngle();
+               // currPlayer.latestMouseAngle = clientMouseMoved.calculateMouseAngle();
                 return;
 
             case "pong":
