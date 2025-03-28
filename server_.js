@@ -2,7 +2,6 @@ import Player from './player.js';
 import { WebSocketServer } from 'ws';
 import { myServerResource } from './server-resource.js';
 import { playerMouseMoved } from './clientMouseData.js';
-// import { heartOKSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite } from './sprites.js';
 
 const wss = new WebSocketServer({ port: myServerResource.serverPort });
 console.log("server port: " + myServerResource.serverPort);

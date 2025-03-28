@@ -12,9 +12,9 @@ export class Sprite extends gameobject {
         scale, // scale factor
         rotationDeg,
         animationConfig,
-        spriteNameId
+        id
     }) {
-        super({ position, id: spriteNameId });
+        super({ position, id: id });
 
         this.resource = resource; // image resource
         this.frameSize = frameSize; // sprite frame size
@@ -68,15 +68,14 @@ export class Sprite extends gameobject {
         ctx.save();
 
         // Calculate the center position of the sprite
-        const centerX = x + this.position.x + (frameSizeX * this.scale) / 2 + this.offsetX;
-        const centerY = y + this.position.y + (frameSizeY * this.scale) / 2 + this.offsetY; // Use this.position.y instead of this.position.x
+        const centerX = x + this.position.x + (frameSizeX * this.scale) / 2;
+        const centerY = y + this.position.y + (frameSizeY * this.scale) / 2; // Use this.position.y instead of this.position.x
+
+        console.log("drawing sprite: " + this.id + " at: " + centerX + " , " + centerY);
 
         // Move the origin to the center of the sprite for proper rotation
         ctx.translate(centerX, centerY);
-
-        // Normalize the rotation angle to avoid unexpected results
-        const normalizedRotation = this.rotationDeg % 360; // Normalizing rotation
-        ctx.rotate(normalizedRotation * Math.PI / 180); // Convert to radians
+        ctx.rotate(this.rotationDeg % 360 * Math.PI / 180); // Convert to radians
 
         // Draw the sprite centered at (0, 0)
         ctx.drawImage(

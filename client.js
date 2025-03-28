@@ -6,7 +6,7 @@ import { GameLoop } from './gameloop.js';
 import { FrameIndexPattern } from './FrameIndexPattern.js';
 import { DEADFRAMES, HEARTBEATOKFRAMES } from './animations.js';
 import { gameobject } from './GameObject.js';
-import { heartOKSprite, heartCriticalSprite, heartImpactedSprite, walkingLegsSprite, backgroundSprite, playerDeadSprite, bloodSpat } from './sprites.js';
+import { heartOKSprite, heartCriticalSprite, heartImpactedSprite, walkingLegsSprite, gameMapSprite, playerDeadSprite, bloodSpat } from './sprites.js';
 import { HUDOverlay } from './HUD.js';
 import { clientJoinReq } from './clientJoinReq.js';
 import { Camera } from './camera.js';
@@ -41,10 +41,11 @@ let allPlayers = new Map();
 let myPlayerId = 0;
 
 let mainScene = new gameobject({ position: new Vector(0, 0), id: 'mainscene' });
-mainScene.addChild(backgroundSprite);
+
+
 let uiScene = new gameobject({ position: new Vector(0, 0), id: 'uiscene' });
 
-const myPlayerCamera = new Camera();
+//const myPlayerCamera = new Camera();
 //mainScene.addChild(myPlayerCamera);
 
 // Establish a connection to the server
@@ -157,16 +158,18 @@ const draw = () => {
     const deltaTime = currentTime - lastFrameTime;
     lastFrameTime = currentTime;
 
-    myPlayer.addChild(myPlayerCamera);
-
     // Clear the game canvas and save the context
+    
+
     gameCtx.clearRect(0, 0, 2000, 2000);
     gameCtx.save();
-
-    gameCtx.translate(myPlayerCamera.position.x, myPlayerCamera.position.y);
-    console.log("myplayer camera: " + JSON.stringify(myPlayerCamera.position));
-    //gameCtx.translate(-myPlayer.position.x, -myPlayer.position.y);
+    //gameMapSprite.draw(gameCtx, -575, -395 );
+    
+    gameCtx.translate(-myPlayer.position.x + gameCanvas.width / 2, -myPlayer.position.y + gameCanvas.height / 2);
+    gameMapSprite.drawImage(gameCtx, 0, 0, 0, 0);
+    
     mainScene.draw(gameCtx, 0, 0);
+
     gameCtx.restore();
 
 
@@ -186,9 +189,9 @@ const draw = () => {
         uiScene.addChild(heartImpactedSprite);
     }
     else
-    if (myPlayer.hp < 50) {
-        uiScene.addChild(heartCriticalSprite);
-    };
+        if (myPlayer.hp < 50) {
+            uiScene.addChild(heartCriticalSprite);
+        };
 
     uiScene.draw(uiCtx, 0, 0);
 };

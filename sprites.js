@@ -14,7 +14,7 @@ export const heartOKSprite = new Sprite({
     scale: 2,
     rotationDeg: 0,
     animationConfig: new FrameIndexPattern(HEARTBEATOKFRAMES),
-    spriteNameId: 'heartOKSprite'
+    id: 'heartOKSprite'
 });
 
 export const heartImpactedSprite = new Sprite({
@@ -27,7 +27,7 @@ export const heartImpactedSprite = new Sprite({
     scale: 2,
     rotationDeg: 0,
     animationConfig: new FrameIndexPattern(HEARTBEATOKFRAMES),
-    spriteNameId: 'heartImpactedSprite'
+    id: 'heartImpactedSprite'
 });
 
 export const heartCriticalSprite = new Sprite({
@@ -40,7 +40,7 @@ export const heartCriticalSprite = new Sprite({
     scale: 2,
     rotationDeg: 0,
     animationConfig: new FrameIndexPattern(HEARTBEATOKFRAMES), 
-    spriteNameId: 'heartCriticalSprite'
+    id: 'heartCriticalSprite'
 });
 
 
@@ -53,7 +53,7 @@ export const playerDeadSprite = new Sprite({
     scale: 1, 
     rotationDeg: 1,
     animationConfig: new FrameIndexPattern(DEADFRAMES),
-    spriteNameId: 'playerDeadSprite'
+    id: 'playerDeadSprite'
 });
 
 export const walkingLegsSprite = new Sprite({
@@ -65,20 +65,20 @@ export const walkingLegsSprite = new Sprite({
     scale: 1, 
     rotationDeg: 0,
     animationConfig: new FrameIndexPattern(LEGFRAMES),
-    spriteNameId: 'walkingLegsSprite'
+    id: 'walkingLegsSprite'
 });
 
-export const backgroundSprite = new Sprite({
+export const gameMapSprite = new Sprite({
     resource: resources.images.mapXgenStudio,
     hFrames: 1,
     vFrames: 1,
-    frameSize: { width: 700, height: 500 },
+    frameSize: { width: 1151, height: 791 },
     frame: 1,
     position: new Vector(0, 0),
     scale: 1,
     rotationDeg: 0,
-   // animationConfig: new FrameIndexPattern(BACKGROUNDFRAME),
-    spriteNameId: 'backgroundSprite' // Ensure unique ID
+    animationConfig: new FrameIndexPattern(BACKGROUNDFRAME),
+    id: 'mapSprite' // Ensure unique ID
 });
 
 export const bloodSpat = new Sprite({
