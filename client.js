@@ -11,7 +11,7 @@ import { HUDOverlay } from './HUD.js';
 import { clientJoinReq } from './clientJoinReq.js';
 import { Camera } from './camera.js';
 import { playerMouseClicked, playerMouseMoved } from './clientMouseData.js';
-import { myEvents } from './events.js';
+import { myEvents } from "./events.js";
 
 const serverPort = 5501;
 const serverUrl = `ws://localhost:${serverPort}`;
@@ -44,11 +44,8 @@ let mainScene = new gameobject({ position: new Vector(0, 0), id: 'mainscene' });
 mainScene.addChild(backgroundSprite);
 let uiScene = new gameobject({ position: new Vector(0, 0), id: 'uiscene' });
 
-myEvents.on("playerposition", mainScene, (position) => {
-    console.log("MYEVENTS TEST triggered: " + JSON.stringify(position));
-});
-
-//uiScene.addChild(myHud);
+const myPlayerCamera = new Camera();
+//mainScene.addChild(myPlayerCamera);
 
 // Establish a connection to the server
 console.log("connecting to server: " + serverUrl);
@@ -139,29 +136,18 @@ socket.onmessage = (message) => {
     }
 };
 
-// Render game loop
-// capture the ctx framerate and display it on the screen
-
-const update = (delta) => {
-    mainScene.stepEntry(delta, mainScene);
-    uiScene.stepEntry(delta, uiScene);
-}
-
-
-// const heroPlayer = new Player({ position: new Vector(100, 100), color: 'blue' });
-// mainScene.addChild(heroPlayer);
-
-
-
-
-// myHud.drawImage(ctx, 0, canvas.height - 100);
-
 function getmyPlayerOrNull() {
     if (allPlayers.has(myPlayerId)) {
         return allPlayers.get(myPlayerId);
     }
     return undefined;
 }
+
+const update = (delta) => {
+    mainScene.stepEntry(delta, mainScene);
+    uiScene.stepEntry(delta, uiScene);
+}
+
 
 let lastFrameTime = performance.now();
 const draw = () => {
@@ -171,18 +157,21 @@ const draw = () => {
     const deltaTime = currentTime - lastFrameTime;
     lastFrameTime = currentTime;
 
+    myPlayer.addChild(myPlayerCamera);
+
     // Clear the game canvas and save the context
     gameCtx.clearRect(0, 0, 2000, 2000);
     gameCtx.save();
 
-    gameCtx.translate(gameCanvas.width / 2, gameCanvas.height / 2);
-    gameCtx.translate(-myPlayer.position.x, -myPlayer.position.y);
-
+    gameCtx.translate(myPlayerCamera.position.x, myPlayerCamera.position.y);
+    console.log("myplayer camera: " + JSON.stringify(myPlayerCamera.position));
+    //gameCtx.translate(-myPlayer.position.x, -myPlayer.position.y);
     mainScene.draw(gameCtx, 0, 0);
     gameCtx.restore();
 
-    uiCtx.clearRect(0, 0, 2000, 2000);
 
+
+    uiCtx.clearRect(0, 0, 2000, 2000);
     let myHud = new HUDOverlay({ position: myPlayer.position, color: 'red', frameTimeMs: deltaTime, hitPoints: myPlayer.hp });
     myHud.drawHudTexts(uiCtx);
 

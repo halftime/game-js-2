@@ -5,6 +5,8 @@ export class gameobject {
         this.id = id ?? Math.random().toString();
         this.position = position ?? new Vector(0, 0);
         this.children = new Map();
+
+        console.log("gameobject created: " + JSON.stringify(this));
     }
 
     stepEntry(delta, root) {
