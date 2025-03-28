@@ -1,0 +1,68 @@
+[
+    {
+        "weapon": "fist",
+        "damage": 5,
+        "walkspeed": 1.0,
+        "hitbox": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 1.25,
+            "range": 0.75
+        }
+    },
+    {
+        "weapon": "bat",
+        "damage": 19,
+        "walkspeed": 0.9,
+        "hitbox": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 3.0,
+            "range": 2.75
+        }
+    },
+    {
+        "weapon": "glock",
+        "damage": 13,
+        "walkspeed": 0.8,
+        "hitbox": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 0.5,
+            "range": 9.75
+        }
+    },
+    {
+        "weapon": "ak47",
+        "damage": 11,
+        "walkspeed": 0.7,
+        "hitbox": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 1.5,
+            "range": 9.75
+        }
+    },
+    {
+        "weapon": "katana",
+        "damage": 8,
+        "walkspeed": 1,
+        "hitbox": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 4,
+            "range": 2.5
+        }
+    },
+    {
+        "weapon": "shotgun",
+        "damage": 20,
+        "walkspeed": 0.7,
+        "hitbox": {
+            "x": 0.0,
+            "y": 0.0,
+            "width": 4.25,
+            "range": 5.5
+        }
+    }
+]

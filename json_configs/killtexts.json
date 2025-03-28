@@ -1,0 +1,199 @@
+[
+    {
+        "weapon": "fist",
+        "weaponnames": [
+            "hand",
+            "fist"
+        ],
+        "killtexts": [
+            "[Player Name] pwn3d [Opponent Name]",
+            "[Player Name] made n00bsauce out of [Opponent Name]",
+            "[Player Name] fisticuffed [Opponent Name]",
+            "[Player Name] used his [Weapon Name]s to kill [Opponent Name]",
+            "[Player Name] heavy-handedly [Opponent Name]",
+            "[Player Name] chuck norris'd [Opponent Name]",
+            "[Player Name] laid [Opponent Name] out with a cheap shot",
+            "[Player Name] [Weapon Name] KO'd [Opponent Name] - Fatality!",
+            "[Player Name] mike tyson'd [Opponent Name]",
+            "[Player Name] showed [Opponent Name] who is the greatest",
+            "[Player Name] put [Opponent Name] down for the count",
+            "[Player Name] assaulted [Opponent Name] with his [Weapon Name]",
+            "[Player Name] fed [Opponent Name] a knuckle sandwich",
+            "[Player Name] made [Opponent Name] fear the reaper",
+            "[Player Name] showed [Opponent Name] the eye of the tiger",
+            "[Player Name] violated [Opponent Name]",
+            "[Player Name] got personal with [Opponent Name]",
+            "[Player Name]'s [Weapon Name]s gave [Opponent Name] the 'ol one-two",
+            "[Player Name] gave [Opponent Name] a taste of their own medicine",
+            "[Player Name] put [Opponent Name] in a sleeper hold",
+            "[Player Name] put [Opponent Name] in a headlock",
+            "[Player Name] put [Opponent Name] in a chokehold",
+            "[Player Name] made [Opponent Name] eat their own [Weapon Name]",
+            "[Player Name] made [Opponent Name] beg for mercy",
+            "[Player Name] made [Opponent Name] eat dirt",
+            "[Player Name] fisted [Opponent Name] to death!",
+            "[Player Name] punched [Opponent Name] in the face",
+            "[Player Name]'s [Weapon Name] met [Opponent Name]'s face",
+        ]
+    },
+    {
+        "weapon": "bat",
+        "weaponnames": [
+            "baseball bat",
+            "bat"
+        ],
+        "killtexts": [
+            "[Player Name] smashed [Opponent Name] with a [Weapon Name]",
+            "[Player Name] hit a home run on [Opponent Name]",
+            "[Player Name] knocked [Opponent Name] out of the park",
+            "[Player Name] took [Opponent Name] out to the ballgame",
+            "[Player Name] hit a grand slam on [Opponent Name]",
+            "[Player Name] went yard on [Opponent Name]",
+            "[Player Name] put [Opponent Name] in the dugout",
+            "[Player Name] sent [Opponent Name] to the showers",
+            "[Player Name] took [Opponent Name] to the cleaners",
+            "[Player Name] made a real mess of [Opponent Name]",
+            "[Player Name] slugged [Opponent Name]",
+            "[Player Name]'s [Weapon Name] knocked [Opponent Name] out",
+            "[Player Name] sent [Opponent Name] back to minor league",
+            "[Player Name] made an impression on [Opponent Name]",
+            "[Player Name] babe ruth'd [Opponent Name]",
+            "[Player Name] mistook [Opponent Name] for a pinata",
+            "[Player Name] grand-slammed [Opponent Name]",
+            "[Player Name] played t-ball with [Opponent Name]'s head"
+        ]
+    },
+    {
+        "weapon": "glock",
+        "weaponnames": [
+            "glock",
+            "pistol",
+            "handgun"
+        ],
+        "killtexts": [
+            "[Player Name] rocked [Opponent Name] with a [Weapon Name]",
+            "[Player Name] busted a cap in [Opponent Name]",
+            "[Player Name] gansta gripped [Opponent Name]",
+            "[Player Name] went postal on [Opponent Name]",
+            "[Player Name] 007'd [Opponent Name]",
+            "[Player Name] 9mm'd [Opponent Name]",
+            "[Player Name] assassinated [Opponent Name]",
+            "[Player Name] silenced [Opponent Name]",
+            "[Player Name] hit [Opponent Name] right between the eyes",
+            "[Player Name] executed [Opponent Name]",
+            "[Player Name] shot [Opponent Name] in the face (boom! headshot!)",
+            "[Player Name] rubbed [Opponent Name] out",
+            "[Player Name] popped [Opponent Name]",
+            "[Player Name] cap'd [Opponent Name]",
+            "[Player Name] blasted [Opponent Name]",
+            "[Player Name] ambushed [Opponent Name] with a [Weapon Name]",
+            "[Player Name] gave [Opponent Name] a lesson in gun safety",
+            "[Player Name] put a 9mm hole in [Opponent Name]'s face!",
+            "[Player Name] performed a drive-by on [Opponent Name]",
+            "[Player Name] showed [Opponent Name] the meaning of 'glock and roll'",
+            "[Player Name]'s [Weapon Name] had a full magazine of lead for [Opponent Name]",
+            "[Player Name] gave [Opponent Name] some 9mm airholes",
+            "[Player Name]'s [Weapon Name] had a taste of lead for [Opponent Name]",
+            "[Player Name]'s [Weapon Name] made [Opponent Name] a corpse"
+        ]
+    },
+    {
+        "weapon": "ak47",
+        "weaponnames": [
+            "ak",
+            "ak47"
+        ],
+        "killtexts": [
+            "[Player Name] caponed [Opponent Name]",
+            "[Player Name] swiss cheesed [Opponent Name] with an [Weapon Name]",
+            "[Player Name] emptied a clip into [Opponent Name]",
+            "[Player Name] gave [Opponent Name] a lead enema",
+            "[Player Name] pumped [Opponent Name] full of lead",
+            "[Player Name] went scarface on [Opponent Name]",
+            "[Player Name] gunned [Opponent Name] down",
+            "[Player Name] unloaded on [Opponent Name]",
+            "[Player Name] ambushed [Opponent Name]",
+            "[Player Name] fed [Opponent Name] some 7.62mm",
+            "[Player Name] blasted [Opponent Name] with an [Weapon Name]",
+            "[Player Name] turned into [Opponent Name] big bore swiss cheese",
+            "[Player Name] turned [Opponent Name] into a blood fountain",
+            "[Player Name] introduced [Opponent Name] to the [Weapon Name]",
+            "[Player Name] perforated [Opponent Name] with a hail of bullets",
+            "[Player Name] blasted [Opponent Name] with a hail of bullets",
+            "[Player Name]'s [Weapon Name] made [Opponent Name] a corpse",
+            "[Player Name]'s [Weapon Name] gave [Opponent Name] some 7.62mm airholes",
+            "[Player Name]'s [Weapon Name] had a taste of lead for [Opponent Name]",
+            "[Player Name]'s [Weapon Name] had a full magazine of lead for [Opponent Name]",
+        ]
+    },
+    {
+        "weapon": "katana",
+        "weaponnames": [
+            "katana",
+            "sword",
+            "blade",
+            "samurai sword"
+        ],
+        "killtexts": [
+            "[Player Name] sworded [Opponent Name]",
+            "[Player Name] h4x0r3d [Opponent Name]",
+            "[Player Name] turned [Opponent Name] into a blood fountain",
+            "[Player Name] sliced [Opponent Name] open",
+            "[Player Name] diced [Opponent Name] julienne style",
+            "[Player Name] iron chef'd [Opponent Name]",
+            "[Player Name] made sushi out of [Opponent Name]",
+            "[Player Name] ninja'd [Opponent Name]",
+            "[Player Name] filleted [Opponent Name]",
+            "[Player Name] Hattori Hanzo'd [Opponent Name]",
+            "[Player Name] [Weapon Name]'d [Opponent Name]",
+            "[Player Name] cut [Opponent Name] down to size",
+            "[Player Name] chopped [Opponent Name] into little pieces",
+            "[Player Name] made sashimi out of [Opponent Name]",
+            "[Player Name] cut [Opponent Name] in half",
+            "[Player Name] cut [Opponent Name]'s head straight off",
+            "[Player Name] showed [Opponent Name] the pointy end of their [Weapon Name]",
+            "[Player Name]'s [Weapon Name] cut [Opponent Name] in pieces"
+        ]
+    },
+    {
+        "weapon": "sledgehammer",
+        "weaponnames": [
+            "sledgehammer",
+            "hammer",
+            "sledge"
+        ],
+        "killtexts": [
+            "[Player Name] sledged [Opponent Name]",
+            "[Player Name] pulverized [Opponent Name]",
+            "[Player Name] taught [Opponent Name] about hammer time",
+            "[Player Name] turned [Opponent Name] into a pancake",
+            "[Player Name] tenderized [Opponent Name]",
+            "[Player Name] smashed [Opponent Name] with a [Weapon Name]",
+            "[Player Name] smashed [Opponent Name] into the ground",
+            "[Player Name] tested his [Weapon Name] on [Opponent Name]",
+            "[Player Name] hammer time'd [Opponent Name]",
+            "[Player Name]'s [Weapon Name] met [Opponent Name]'s brains"
+        ]
+    },
+    {
+        "weapon": "shotgun",
+        "weaponnames": [
+            "shotgun",
+            "12 gauge",
+            "sawed-off"
+        ],
+        "killtexts": [
+            "[Player Name] blasted [Opponent Name] with a [Weapon Name]",
+            "[Player Name] boom sticked [Opponent Name]",
+            "[Player Name] duck hunted [Opponent Name]",
+            "[Player Name] gave [Opponent Name] a faceful of buckshot",
+            "[Player Name] told [Opponent Name] off with a [Weapon Name]",
+            "[Player Name]'s [Weapon Name] declared open season on [Opponent Name]",
+            "[Player Name] poached [Opponent Name]",
+            "[Player Name] [Weapon Name]'d [Opponent Name]",
+            "[Player Name] sent [Opponent Name] back to the civil war",
+            "[Player Name] fed [Opponent Name] buckshot with a [Weapon Name]",
+            "[Player Name] blasted [Opponent Name] with a hail of buckshot"
+        ]
+    }
+]
