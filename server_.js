@@ -12,16 +12,6 @@ wss.on('connection', (ws) => {
     ws.id = randomPlayerId; // assign player id to ws object
     const newSpawnPoint = myServerResource.getSpawnPoint();
 
-
-    // console.log("new player spawnpoint: " + JSON.stringify(newSpawnPoint));
-
-    // activePlayers.set(randomPlayerId, new Player(randomPlayerId, ws, newSpawnPoint.x, newSpawnPoint.y, Player.getRandomColor()));
-
-    // const newPlayer = activePlayers.get(randomPlayerId);
-    // console.log("new player connected: " + newPlayer.id);
-    // ws.send(JSON.stringify({ type: 'newplayer', playerObj: newPlayer }));
-
-
     // Handle incoming messages from the client
     ws.on('message', (message) => {
         const timestampOnReceive = Date.now();

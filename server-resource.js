@@ -1,14 +1,20 @@
 import { Vector } from "./grid.js";
 import fs from 'fs';
 
-const spawnsXgenStudioMap = JSON.parse(fs.readFileSync('./map/spawn_points.json', 'utf-8'));
-const wallsXgenStudioMap = JSON.parse(fs.readFileSync('./map/not_walkables.json', 'utf-8'));
+const spawnsXgenStudioMap = JSON.parse(fs.readFileSync('./json_configs/spawn_points.json', 'utf-8')); // (X, Y)
+const wallsXgenStudioMap = JSON.parse(fs.readFileSync('./json_configs/not_walkables.json', 'utf-8')); // (X1, Y1, X2, Y2) - top left and bottom right coordinates of the wall
+const weaponsXgenStudio = JSON.parse(fs.readFileSync('./json_configs/weapons.json', 'utf-8')); // see json
+const killTextsXgenStudio = JSON.parse(fs.readFileSync('./json_configs/kill_texts.json', 'utf-8')); // see json
 
 class ServerResource {
     serverPort = 5501;
     constructor() {
         this.wallSquares = [];
         this.spawns = [];
+
+        this.weapons = {};
+        this.killTexts = {};
+
         for (let i = 0; i < wallsXgenStudioMap.length; i++) {
             const wall = wallsXgenStudioMap.at(i);
             this.wallSquares.push([new Vector(wall[0], wall[1]), new Vector(wall[2], wall[3])]); // [top left, bottom right]
@@ -20,6 +26,13 @@ class ServerResource {
         this.obstructedMap = this.generateCoordinateMap();
         console.log(">>> loaded walls: " + this.wallSquares.length);
         console.log(">>> collision map coordinates: " + this.obstructedMap.size);
+        console.log(">>> loaded spawn points: " + this.spawns.length);
+
+        for (let i = 0; i < weaponsXgenStudio.length; i++) {
+            const weapon = weaponsXgenStudio.at(i);
+            //this.weapons[weapon.name] = weapon;
+            console.log(">>> loaded weapon: " + weapon.name + " with damage: " + weapon.damage);
+        }
     }
 
     getSpawnPoint() {

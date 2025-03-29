@@ -1,6 +1,6 @@
 [
     {
-        "weapon": "fist",
+        "name": "fist",
         "damage": 5,
         "walkspeed": 1.0,
         "hitbox": {
@@ -11,7 +11,7 @@
         }
     },
     {
-        "weapon": "bat",
+        "name": "bat",
         "damage": 19,
         "walkspeed": 0.9,
         "hitbox": {
@@ -22,7 +22,7 @@
         }
     },
     {
-        "weapon": "glock",
+        "name": "glock",
         "damage": 13,
         "walkspeed": 0.8,
         "hitbox": {
@@ -33,7 +33,7 @@
         }
     },
     {
-        "weapon": "ak47",
+        "name": "ak47",
         "damage": 11,
         "walkspeed": 0.7,
         "hitbox": {
@@ -44,7 +44,7 @@
         }
     },
     {
-        "weapon": "katana",
+        "name": "katana",
         "damage": 8,
         "walkspeed": 1,
         "hitbox": {
@@ -55,7 +55,7 @@
         }
     },
     {
-        "weapon": "shotgun",
+        "name": "shotgun",
         "damage": 20,
         "walkspeed": 0.7,
         "hitbox": {
