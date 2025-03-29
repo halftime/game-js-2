@@ -2,6 +2,7 @@ import Player from './player.js';
 import { WebSocketServer } from 'ws';
 import { myServerResource } from './server-resource.js';
 import { playerMouseMoved } from './clientMouseData.js';
+import { walkingLegsSprite } from './sprites.js';
 
 const wss = new WebSocketServer({ port: myServerResource.serverPort });
 console.log("server port: " + myServerResource.serverPort);
@@ -24,17 +25,14 @@ wss.on('connection', (ws) => {
                 console.log(">>> " + JSON.stringify(data));
 
                 const newPlayer = new Player(randomPlayerId, ws, newSpawnPoint.x, newSpawnPoint.y, Player.getRandomColor(), data.username);
+                
                 activePlayers.set(randomPlayerId, newPlayer);
 
+                newPlayer.addChild(walkingLegsSprite); // add legs sprite to player object
+                console.log(newPlayer.children); // Log children as an object
+                
+
                 console.log("new player created: " + JSON.stringify(newPlayer));
-                // const serializablePlayer = {
-                //     id: newPlayer.id,
-                //     position: newPlayer.position,
-                //     color: newPlayer.color,
-                //     username: newPlayer.username,
-                //     hp: newPlayer.hp,
-                //     alive: newPlayer.alive
-                // };
                 ws.send(JSON.stringify({ type: 'newplayer', playerObj: newPlayer }));
                 return;
 
@@ -106,12 +104,12 @@ wss.on('connection', (ws) => {
 function broadcastPlayers() { // hardwire broadcast to server tick interval? 
     const newFrameTime = Date.now();
     const data = JSON.stringify({ type: 'broadcast', players: Array.from(activePlayers.values()) });
-
+    
     activePlayers.values().forEach(p => {
         p.websocket.send(data);
     });
-
-    // console.log("broadcasting players: " + data);
+    
+    console.log("broadcasting players: " + data);
 };
 
 
@@ -132,7 +130,7 @@ function ServerTickLoop() {
 
         //console.log("player to json: " + JSON.stringify(players[playerId]));
     });
-    broadcastPlayers();
+    broadcastPlayers(); // send player data to all clients
 
     // Calculate the time we should wait until the next tick
     const timeToNextTick = nextTickTime - currentTime;

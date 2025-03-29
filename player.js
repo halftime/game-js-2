@@ -18,7 +18,6 @@ export default class Player extends gameobject {
 
         //this.playerid = playerid;
         this.username = username;
-        this.websocket = websocket; // websocket used by SERVER to send messages to CLIENT
         this.hp = 100;
         this.alive = true;
         this.color = color;

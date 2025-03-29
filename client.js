@@ -13,6 +13,7 @@ import { Camera } from './camera.js';
 import { playerMouseClicked, playerMouseMoved } from './clientMouseData.js';
 import { myEvents } from "./events.js";
 
+
 const serverPort = 5501;
 const serverUrl = `ws://localhost:${serverPort}`;
 
@@ -84,6 +85,20 @@ socket.onmessage = (message) => {
             myPlayerId = data.playerObj.id;
 
             const myPlayerObj = new Player(data.playerObj.id, null, data.playerObj.position.x, data.playerObj.position.y, data.playerObj.color, data.playerObj.username);
+            
+            console.log("TEST TEST TEST " + JSON.stringify(data.playerObj.children["walkingLegsSprite"] ));
+
+            if (data.playerObj.children["walkingLegsSprite"]) {
+                console.log("walkingLegsSprite found in children: " + JSON.stringify(myPlayerObj.children["walkingLegsSprite"]));
+                myPlayerObj.addChild(walkingLegsSprite);
+            }
+
+
+            Array.from(data.playerObj.children).forEach(child => {
+                console.log("child >>>>: " + JSON.stringify(child));
+                myPlayerObj.addChild(child);
+            });
+
 
             allPlayers.set(data.playerObj.id, myPlayerObj);
             console.log(">>> my player id: " + myPlayerId);
@@ -111,9 +126,8 @@ socket.onmessage = (message) => {
                     existingPlayer.alive = playerObj.alive;
                     existingPlayer.hp = playerObj.hp;
 
-                    if (!mainScene.children.has(existingPlayer)) {
-                        mainScene.addChild(existingPlayer);
-                    }
+                    if (!mainScene.children[existingPlayer.id]) { mainScene.addChild(existingPlayer); }
+
 
                     if (existingPlayer.hp <= 0 || !existingPlayer.alive) {
                         existingPlayer.alive = false;
@@ -161,7 +175,7 @@ const draw = () => {
     gameMapSprite.drawImage(gameCtx, 0, 0, 0, 0);
     mainScene.draw(gameCtx, 0, 0);
 
-    getmyPlayerOrNull().addChild(walkingLegsSprite);
+    //getmyPlayerOrNull().addChild(walkingLegsSprite);
     gameCtx.restore();
 
     // UI
