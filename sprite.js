@@ -25,7 +25,11 @@ export class Sprite extends gameobject {
         this.position = position; //?? new Vector(0, 0);
         this.scale = scale ?? 1;
         this.rotationDeg = rotationDeg ?? 0; // sprite rotation angle in radians
-        this.animations = animationConfig ?? null;
+        Object.defineProperty(this, 'animations', {
+            value: animationConfig ?? null,
+            enumerable: false,
+            writable: true
+        });
         this.buildFrameMap();
     }
 

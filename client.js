@@ -85,20 +85,6 @@ socket.onmessage = (message) => {
             myPlayerId = data.playerObj.id;
 
             const myPlayerObj = new Player(data.playerObj.id, null, data.playerObj.position.x, data.playerObj.position.y, data.playerObj.color, data.playerObj.username);
-            
-            console.log("TEST TEST TEST " + JSON.stringify(data.playerObj.children["walkingLegsSprite"] ));
-
-            if (data.playerObj.children["walkingLegsSprite"]) {
-                console.log("walkingLegsSprite found in children: " + JSON.stringify(myPlayerObj.children["walkingLegsSprite"]));
-                myPlayerObj.addChild(walkingLegsSprite);
-            }
-
-
-            Array.from(data.playerObj.children).forEach(child => {
-                console.log("child >>>>: " + JSON.stringify(child));
-                myPlayerObj.addChild(child);
-            });
-
 
             allPlayers.set(data.playerObj.id, myPlayerObj);
             console.log(">>> my player id: " + myPlayerId);
@@ -115,6 +101,8 @@ socket.onmessage = (message) => {
             //console.log("broadcast received: " + JSON.stringify(data.players));
 
             Array.from(data.players).forEach(playerObj => {
+
+
                 if (!allPlayers.has(playerObj.id)) {
                     let newPlayer = new Player(playerObj.id, null, playerObj.position.x, playerObj.position.y, playerObj.color);
                     allPlayers.set(playerObj.id, newPlayer);
@@ -128,11 +116,11 @@ socket.onmessage = (message) => {
 
                     if (!mainScene.children[existingPlayer.id]) { mainScene.addChild(existingPlayer); }
 
-
-                    if (existingPlayer.hp <= 0 || !existingPlayer.alive) {
-                        existingPlayer.alive = false;
-                        mainScene.removeChild(existingPlayer);
-                    }
+                   if (playerObj.children["walkingLegsSprite"])
+                   {
+                        existingPlayer.addChild(walkingLegsSprite);
+                        walkingLegsSprite.frame = playerObj.children["walkingLegsSprite"].frame; // set frame index FROM SERVER (tick)
+                   }
                 }
             });
             break;
