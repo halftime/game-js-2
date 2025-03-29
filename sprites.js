@@ -94,3 +94,56 @@ export const bloodSpat = new Sprite({
     id: 'bloodSpatSprite'
 });
 
+
+// Weapon sprites below
+
+export const batModelSprite = new Sprite({
+    resource: resources.images.bat_model,
+    frameSize: { width: 57, height: 3 },
+    hFrames: 1, vFrames: 1,
+    position: new Vector(0, 0),
+    frame: 0,
+    scale: 1, rotationDeg: 0,
+    id: 'batModelSprite'
+});
+
+export const akModelSprite = new Sprite({
+    resource: resources.images.ak_model,
+    frameSize: { width: 57, height: 3 },
+    hFrames: 1, vFrames: 1,
+    position: new Vector(0, 0),
+    frame: 0,
+    scale: 1, rotationDeg: 0,
+    id: 'akModelSprite'
+});
+
+export const katanaModelSprite = new Sprite({
+    resource: resources.images.katana_model,
+    frameSize: { width: 66, height: 6 },
+    hFrames: 1, vFrames: 1,
+    position: new Vector(0, 0),
+    frame: 0,
+    scale: 1, rotationDeg: 0,
+    id: 'katanaModelSprite'
+});
+
+export const glockModelSprite = new Sprite({
+    resource: resources.images.glock_model,
+    frameSize: { width: 29, height: 48 },
+    hFrames: 1, vFrames: 1,
+    position: new Vector(0, 0),
+    frame: 0,
+    scale: 1, rotationDeg: 0,
+    id: 'glockModelSprite'
+});
+
+export const rifleModelSprite = new Sprite({
+    resource: resources.images.rifle_model,
+    frameSize: { width: 116, height: 54 },
+    hFrames: 1, vFrames: 1,
+    position: new Vector(0, 0),
+    frame: 0,
+    scale: 1, rotationDeg: 0,
+    id: 'rifleModelSprite'
+});
+

@@ -160,6 +160,8 @@ const draw = () => {
     gameCtx.translate(xTranslation, yTranslation);
     gameMapSprite.drawImage(gameCtx, 0, 0, 0, 0);
     mainScene.draw(gameCtx, 0, 0);
+
+    getmyPlayerOrNull().addChild(walkingLegsSprite);
     gameCtx.restore();
 
     // UI

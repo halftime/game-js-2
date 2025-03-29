@@ -16,6 +16,8 @@ class PlayerResources {
             bat_model: "./sprites/Baseball/bat_model.png",
             ak_model: "./sprites/AK/ak_model.png",
             katana_model: "./sprites/Katana/katana_model.png",
+            glock_model: "./sprites/Glock/glock_model.png",
+            rifle_model: "./sprites/Rifle/rifle_model.png",
         };
 
         // this.walls = [new Vector(50, 50), new Vector(910, 50), new Vector(50, 660), new Vector(910, 660)];

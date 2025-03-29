@@ -12,8 +12,8 @@ class ServerResource {
         this.wallSquares = [];
         this.spawns = [];
 
-        this.weapons = {};
-        this.killTexts = {};
+        this.weapons = new Map(); // weapon name -> weapon object
+        this.killTexts = new Map(); // weapon name -> kill text object
 
         for (let i = 0; i < wallsXgenStudioMap.length; i++) {
             const wall = wallsXgenStudioMap.at(i);
@@ -29,20 +29,20 @@ class ServerResource {
         console.log(">>> loaded spawn points: " + this.spawns.length);
 
         for (let i = 0; i < weaponsXgenStudio.length; i++) {
-            const weapon = weaponsXgenStudio.at(i);
-            this.weapons[weapon.name] = weapon;
-            console.log(">>> loaded weapon: " + weapon.name + " with damage: " + weapon.damage);
+            const weaponJobj = weaponsXgenStudio.at(i);
+            this.weapons.set(weaponJobj.name, weaponJobj); // add to map
+            console.log(">>> loaded weapon: " + weaponJobj.name + " with damage: " + weaponJobj.damage);
         }
 
         for (let i = 0; i < killTextsXgenStudio.length; i++) {
-            const killText = killTextsXgenStudio.at(i);
-            this.killTexts[killText.weapon] = killText;
-            console.log(">>> loaded kill text: " + killText.weapon + " with text: " + killText.text);
+            const killTextJobj = killTextsXgenStudio.at(i);
+            this.killTexts.set(killTextJobj.weapon, killTextJobj); // add to map
+            console.log(">>> loaded kill text: " + killTextJobj.weapon + " with text: " + killTextJobj.text);
         }
     }
 
     getRandomKillText(weaponName, killerName, victimName) {
-        const killText = this.killTexts[weaponName];
+        const killText = this.killTexts.get(weaponName) ?? undefined;
         if (!killText) {
             return `${killerName} eliminated ${victimName} (no kill text for ${weaponName})`;
         }
@@ -52,7 +52,6 @@ class ServerResource {
     }
 
     getSpawnPoint() {
-       // return this.spawns[0]; //debugging, return random spawn point
         return this.spawns[Math.floor(Math.random() * this.spawns.length)];
     }
 

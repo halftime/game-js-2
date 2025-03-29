@@ -53,9 +53,10 @@
             "width": 4,
             "range": 2.5
         }
+
     },
     {
-        "name": "shotgun",
+        "name": "rifle",
         "damage": 20,
         "walkspeed": 0.7,
         "hitbox": {

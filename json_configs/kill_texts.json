@@ -172,11 +172,12 @@
             "[Player Name] smashed [Opponent Name] into the ground",
             "[Player Name] tested his [Weapon Name] on [Opponent Name]",
             "[Player Name] hammer time'd [Opponent Name]",
-            "[Player Name]'s [Weapon Name] met [Opponent Name]'s brains"
+            "[Player Name]'s [Weapon Name] met [Opponent Name]'s brains",
+            "[Player Name] tested his [Weapon Name] on [Opponent Name]'s face"
         ]
     },
     {
-        "weapon": "shotgun",
+        "weapon": "rifle", 
         "weaponnames": [
             "shotgun",
             "12 gauge",
