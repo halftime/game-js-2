@@ -58,13 +58,20 @@ wss.on('connection', (ws) => {
 
                 currPlayer.latestClickTimeMs = timestampOnReceive;
                 console.log(`mouseclick received from client ${data.playerid} at x: ${data.mousePos.x} y: ${data.mousePos.y}`);
+                
+                // debug test, remove later
                 currPlayer.takeDamage(20); // testing damage, death
+
+                const darrytest = myServerResource.getRandomKillText("katana", "KILLER", "VICTIM");
+                console.log(darrytest);
+
+
                 return;
 
             case "mousemoved":
                 if (!data.playerid) return;
                 let clientMouseMoved = new playerMouseMoved(data.playerid, data.mouseMovedPos, data.playerPos);
-                console.log("mousemoved received from client: " + JSON.stringify(clientMouseMoved));
+                //console.log("mousemoved received from client: " + JSON.stringify(clientMouseMoved));
 
                 currPlayer = activePlayers.get(data.playerid);
                 currPlayer.latestMouseMoveTimeMs = timestampOnReceive;

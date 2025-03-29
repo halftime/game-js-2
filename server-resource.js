@@ -30,9 +30,25 @@ class ServerResource {
 
         for (let i = 0; i < weaponsXgenStudio.length; i++) {
             const weapon = weaponsXgenStudio.at(i);
-            //this.weapons[weapon.name] = weapon;
+            this.weapons[weapon.name] = weapon;
             console.log(">>> loaded weapon: " + weapon.name + " with damage: " + weapon.damage);
         }
+
+        for (let i = 0; i < killTextsXgenStudio.length; i++) {
+            const killText = killTextsXgenStudio.at(i);
+            this.killTexts[killText.weapon] = killText;
+            console.log(">>> loaded kill text: " + killText.weapon + " with text: " + killText.text);
+        }
+    }
+
+    getRandomKillText(weaponName, killerName, victimName) {
+        const killText = this.killTexts[weaponName];
+        if (!killText) {
+            return `${killerName} eliminated ${victimName} (no kill text for ${weaponName})`;
+        }
+        const kText = killText.text[Math.floor(Math.random() * killText.text.length)];
+        const randomWeaponNameAlias = killText.weaponnames[Math.floor(Math.random() * killText.weaponnames.length)];
+        return kText.replace("[Player Name]", killerName).replace("[Opponent Name]", victimName).replace("[Weapon Name]", randomWeaponNameAlias);
     }
 
     getSpawnPoint() {

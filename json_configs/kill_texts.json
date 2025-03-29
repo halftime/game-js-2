@@ -5,7 +5,7 @@
             "hand",
             "fist"
         ],
-        "killtexts": [
+        "text": [
             "[Player Name] pwn3d [Opponent Name]",
             "[Player Name] made n00bsauce out of [Opponent Name]",
             "[Player Name] fisticuffed [Opponent Name]",
@@ -42,7 +42,7 @@
             "baseball bat",
             "bat"
         ],
-        "killtexts": [
+        "text": [
             "[Player Name] smashed [Opponent Name] with a [Weapon Name]",
             "[Player Name] hit a home run on [Opponent Name]",
             "[Player Name] knocked [Opponent Name] out of the park",
@@ -70,7 +70,7 @@
             "pistol",
             "handgun"
         ],
-        "killtexts": [
+        "text": [
             "[Player Name] rocked [Opponent Name] with a [Weapon Name]",
             "[Player Name] busted a cap in [Opponent Name]",
             "[Player Name] gansta gripped [Opponent Name]",
@@ -103,7 +103,7 @@
             "ak",
             "ak47"
         ],
-        "killtexts": [
+        "text": [
             "[Player Name] caponed [Opponent Name]",
             "[Player Name] swiss cheesed [Opponent Name] with an [Weapon Name]",
             "[Player Name] emptied a clip into [Opponent Name]",
@@ -134,7 +134,7 @@
             "blade",
             "samurai sword"
         ],
-        "killtexts": [
+        "text": [
             "[Player Name] sworded [Opponent Name]",
             "[Player Name] h4x0r3d [Opponent Name]",
             "[Player Name] turned [Opponent Name] into a blood fountain",
@@ -162,7 +162,7 @@
             "hammer",
             "sledge"
         ],
-        "killtexts": [
+        "text": [
             "[Player Name] sledged [Opponent Name]",
             "[Player Name] pulverized [Opponent Name]",
             "[Player Name] taught [Opponent Name] about hammer time",
@@ -182,7 +182,7 @@
             "12 gauge",
             "sawed-off"
         ],
-        "killtexts": [
+        "text": [
             "[Player Name] blasted [Opponent Name] with a [Weapon Name]",
             "[Player Name] boom sticked [Opponent Name]",
             "[Player Name] duck hunted [Opponent Name]",
