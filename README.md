@@ -18,13 +18,15 @@ npx http-server -p 5501
 |---|---|---|---|
 | random player spawns | high | in prog | 4 original spawn locations ~~*currently forced to map[0] which is top left spawn~~ |
 | weapon spawning | high | in prog | . |
-| collision check | high | in prog | basic serverside hashmap (X, Y) for fast lookup |
-| dmg handling | high | in prog | . |
+| player collision check | high | in prog | basic serverside hashmap (X, Y) for fast lookup |
+| & projectiles | high | in prog | extrapolate vector (player ; click) to target w collision checks |
+| dmg handling | high | in prog | https://stickarena.fandom.com/wiki/Weapons |
 | logging | high | in prog | npm winston? , dump broadcast logging to file |
 | player chat | mid | . | . |
+| (chat) killfeed | high | in prog | used data from stickarena.fandom.com & added extra spice |
 | player scoreboard , stats | mid | . | . |
-| control players' sprites from serverside | low | . | (client) keyUp event => server sets client sprite frame UP |
-| servertick to control sprite steps | low | . | 30, 60, 120 hz server tick? |
+| control players' sprites from serverside | low | . | ie: build & control the whole playerobj incl children on serverside => broadcast to client(s) |
+| servertick to control sprite steps | low | . | 60, 120 hz plausible? |
 | error handling sockets, etc | mid | . | maybe do error handling after porting to TS |
 | migrate to ts ??? | low | . | ~~just write a game engine they said, it will be fun they said~~ | 
 
