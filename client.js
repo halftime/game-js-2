@@ -125,6 +125,12 @@ socket.onmessage = (message) => {
             });
             break;
 
+        case 'servertime':
+            console.log("server timestamp received: " + JSON.stringify(data));
+            myEvents.emit("servertime", data.time);
+            break;
+
+
         default:
             console.warn(`Unhandled message type: ${data.type}`);
             break;
@@ -168,6 +174,8 @@ const draw = () => {
     // UI
     uiCtx.clearRect(0, 0, 2000, 2000); uiCtx.save();
     let myHud = new HUDOverlay({ position: myPlayer.position, color: 'red', frameTimeMs: performance.now() - lastFrameTime, hitPoints: myPlayer.hp });
+    lastFrameTime = performance.now();
+
     myHud.drawHudTexts(uiCtx);
 
     heartBeatSpriteslist.forEach(hbs => { uiScene.removeChild(hbs); });
@@ -183,7 +191,6 @@ const draw = () => {
     }
 
     uiScene.draw(uiCtx, 0, 0);
-    lastFrameTime = performance.now();
 };
 
 let gameLoop = new GameLoop(update, draw);

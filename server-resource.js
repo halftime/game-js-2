@@ -8,11 +8,12 @@ const killTextsXgenStudio = JSON.parse(fs.readFileSync('./json_configs/kill_text
 
 class ServerResource {
     serverPort = 5501;
-    targetServerFps = 10;
+    targetServerFps = 60;
     get targetServerTickTimeMs() {
         return 1000 / this.targetServerFps; // 30 fps = 33.3333 ms per tick
     }
     constructor() {
+        this.mapSize = { x: 1151, y: 751 }; // map size in pixels
         this.wallSquares = [];
         this.spawns = [];
 
@@ -27,22 +28,25 @@ class ServerResource {
             const spawn = spawnsXgenStudioMap.at(i);
             this.spawns.push(new Vector(spawn[0], spawn[1]));
         }
-        this.obstructedMap = this.generateCoordinateMap();
+        this.obstructedMap = this.generateCoordinateMap(this.mapSize.x, this.mapSize.y); // generate coordinate map for fast collision detection
         console.log(">>> loaded walls: " + this.wallSquares.length);
         console.log(">>> collision map coordinates: " + this.obstructedMap.size);
         console.log(">>> loaded spawn points: " + this.spawns.length);
 
         for (let i = 0; i < weaponsXgenStudio.length; i++) {
             const weaponJobj = weaponsXgenStudio.at(i);
-            this.weapons.set(weaponJobj.name, weaponJobj); // add to map
-            console.log(">>> loaded weapon: " + weaponJobj.name + " with damage: " + weaponJobj.damage);
+            this.weapons.set(weaponJobj.name, weaponJobj);
+            //console.log(">>> loaded weapon: " + weaponJobj.name + " with damage: " + weaponJobj.damage);
         }
 
         for (let i = 0; i < killTextsXgenStudio.length; i++) {
             const killTextJobj = killTextsXgenStudio.at(i);
-            this.killTexts.set(killTextJobj.weapon, killTextJobj); // add to map
-            console.log(">>> loaded kill text: " + killTextJobj.weapon + " with text: " + killTextJobj.text);
+            this.killTexts.set(killTextJobj.weapon, killTextJobj);
+            //console.log(">>> loaded kill text: " + killTextJobj.weapon + " with text: " + killTextJobj.text);
         }
+
+        console.log(">>> loaded weapons: " + this.weapons.size);
+        console.log(">>> loaded kill texts: " + this.killTexts.size);
     }
 
     getRandomKillText(weaponName, killerName, victimName) {
@@ -95,10 +99,11 @@ class ServerResource {
         return false;
     }
 
-    generateCoordinateMap() {
+    generateCoordinateMap(xRangeInt, yRangeInt) {
+        // generate coordinate map for fast collision detection
         const mymap = new Map();
-        for (let x = 0; x < 1151; x++) {
-            for (let y = 0; y < 791; y++) {
+        for (let x = 0; x < xRangeInt; x++) {
+            for (let y = 0; y < yRangeInt; y++) {
                 if (this.isWallCollision(new Vector(x, y))) // only add obstructed coordinates to map
                 {
                     mymap.set(`${x},${y}`, true); // true = obstructed, used for collision detection

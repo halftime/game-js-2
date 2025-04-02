@@ -85,7 +85,7 @@ export default class Player extends gameobject {
             return;
         }
         this.prevPosition = new Vector(this.position.x, this.position.y);
-        console.log("position EMITTED" + JSON.stringify(this.position));
+        //console.log("position EMITTED" + JSON.stringify(this.position));
         myEvents.emit("playerposition", this.position);
     }
 

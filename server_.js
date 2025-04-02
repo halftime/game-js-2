@@ -119,14 +119,12 @@ function ServerTickLoop() {
     serverTickCounter += 1;
 
     // Do server tick logic here
-    Object.keys(activePlayers).forEach(playerId => {
-        // should the server set the frame or the client?
-        //players[playerId].currPlayerFrame += 1;
-
-
-        //console.log("player to json: " + JSON.stringify(players[playerId]));
-    });
     broadcastPlayers(); // send player data to all clients
+
+    const myTimeStamp = Date.now(); // ensure same timestamp to all clients
+    activePlayers.forEach(player => {
+        player.websocket.send(JSON.stringify({ type: 'servertime', time: myTimeStamp }));
+    });
 
     // Calculate the time we should wait until the next tick
     const timeToNextTick = nextTickTime - currentTime;
