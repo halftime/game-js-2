@@ -4,8 +4,8 @@ import { myServerResource } from './server-resource.js';
 import { playerMouseMoved } from './clientMouseData.js';
 import { walkingLegsSprite } from './sprites.js';
 
+const targetInterval = myServerResource.targetServerTickTimeMs;
 const wss = new WebSocketServer({ port: myServerResource.serverPort });
-console.log("server port: " + myServerResource.serverPort);
 let activePlayers = new Map();
 
 wss.on('connection', (ws) => {
@@ -25,12 +25,8 @@ wss.on('connection', (ws) => {
                 console.log(">>> " + JSON.stringify(data));
 
                 const newPlayer = new Player(randomPlayerId, ws, newSpawnPoint.x, newSpawnPoint.y, Player.getRandomColor(), data.username);
-                
                 activePlayers.set(randomPlayerId, newPlayer);
-
                 newPlayer.addChild(walkingLegsSprite); // add legs sprite to player object
-                console.log(newPlayer.children); // Log children as an object
-                
 
                 console.log("new player created: " + JSON.stringify(newPlayer));
                 ws.send(JSON.stringify({ type: 'newplayer', playerObj: newPlayer }));
@@ -56,7 +52,7 @@ wss.on('connection', (ws) => {
 
                 currPlayer.latestClickTimeMs = timestampOnReceive;
                 console.log(`mouseclick received from client ${data.playerid} at x: ${data.mousePos.x} y: ${data.mousePos.y}`);
-                
+
                 // debug test, remove later
                 currPlayer.takeDamage(20); // testing damage, death
 
@@ -77,7 +73,7 @@ wss.on('connection', (ws) => {
                 // const dy = clientMouseMoved.mouseMovedPos.y - clientMouseMoved.playerPos.y;
                 // currPlayer.latestMouseAngle = Math.atan2(dy, dx) * (180 / Math.PI); // Convert radians to degrees
                 currPlayer.latestMousePos = clientMouseMoved.mouseMovedPos;
-               // currPlayer.latestMouseAngle = clientMouseMoved.calculateMouseAngle();
+                // currPlayer.latestMouseAngle = clientMouseMoved.calculateMouseAngle();
                 return;
 
             case "pong":
@@ -104,16 +100,16 @@ wss.on('connection', (ws) => {
 function broadcastPlayers() { // hardwire broadcast to server tick interval? 
     const newFrameTime = Date.now();
     const data = JSON.stringify({ type: 'broadcast', players: Array.from(activePlayers.values()) });
-    
+
     activePlayers.values().forEach(p => {
         p.websocket.send(data);
     });
-    
-    console.log("broadcasting players: " + data);
+
+    //console.log("broadcasting players: " + data);
 };
 
 
-const targetInterval = 1000 / 60; // 60 ticks per second
+
 const initialTime = performance.now();
 let serverTickCounter = 0;
 let nextTickTime = initialTime + targetInterval;
@@ -134,17 +130,17 @@ function ServerTickLoop() {
 
     // Calculate the time we should wait until the next tick
     const timeToNextTick = nextTickTime - currentTime;
-
-    // show tick rate every 5 seconds
-    if (serverTickCounter % 300 === 0) {
+    if ( serverTickCounter % 100 === 0) {
+        // Calculate average tick rate
         const avgtickrate = serverTickCounter / (performance.now() - initialTime) * 1000;
-        console.log("Server tickcount: " + serverTickCounter + " avg tickrate: " + avgtickrate);
+        console.log(`Server tickcount: ${serverTickCounter} \t avg tick Ms: ${avgtickrate}`);
     }
 
     const waitTime = timeToNextTick < 0 ? 0 : timeToNextTick;
     nextTickTime += targetInterval;
     setTimeout(ServerTickLoop, waitTime);
 }
+
 
 // Start the loop
 ServerTickLoop();

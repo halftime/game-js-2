@@ -138,27 +138,26 @@ function getmyPlayerOrNull() {
     return undefined;
 }
 
+let xTranslation = 0;
+let yTranslation = 0;
+
 const update = (delta) => {
     mainScene.stepEntry(delta, mainScene);
     uiScene.stepEntry(delta, uiScene);
+
+    let myPlayer = getmyPlayerOrNull();
+    if (!myPlayer) return;
+    xTranslation = Math.min(0, -myPlayer.position.x + gameCanvas.width / 2);
+    yTranslation = Math.min(0, -myPlayer.position.y + gameCanvas.height / 2);
 }
 
 let lastFrameTime = performance.now();
 const draw = () => {
     let myPlayer = getmyPlayerOrNull();
     if (!myPlayer) return;
-    const currentTime = performance.now();
-    const deltaTime = currentTime - lastFrameTime;
-    lastFrameTime = currentTime;
 
     // Clear the game canvas and save the context
     gameCtx.clearRect(0, 0, 2000, 2000); gameCtx.save();
-
-    const xTranslation = Math.min(0, -myPlayer.position.x + gameCanvas.width / 2);
-    const yTranslation = Math.min(0, -myPlayer.position.y + gameCanvas.height / 2);
-
-    //console.log("xTranslation: " + xTranslation + " yTranslation: " + yTranslation);
-
     gameCtx.translate(xTranslation, yTranslation);
     gameMapSprite.drawImage(gameCtx, 0, 0, 0, 0);
     mainScene.draw(gameCtx, 0, 0);
@@ -168,7 +167,7 @@ const draw = () => {
 
     // UI
     uiCtx.clearRect(0, 0, 2000, 2000); uiCtx.save();
-    let myHud = new HUDOverlay({ position: myPlayer.position, color: 'red', frameTimeMs: deltaTime, hitPoints: myPlayer.hp });
+    let myHud = new HUDOverlay({ position: myPlayer.position, color: 'red', frameTimeMs: performance.now() - lastFrameTime, hitPoints: myPlayer.hp });
     myHud.drawHudTexts(uiCtx);
 
     heartBeatSpriteslist.forEach(hbs => { uiScene.removeChild(hbs); });
@@ -184,6 +183,7 @@ const draw = () => {
     }
 
     uiScene.draw(uiCtx, 0, 0);
+    lastFrameTime = performance.now();
 };
 
 let gameLoop = new GameLoop(update, draw);

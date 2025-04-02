@@ -8,6 +8,10 @@ const killTextsXgenStudio = JSON.parse(fs.readFileSync('./json_configs/kill_text
 
 class ServerResource {
     serverPort = 5501;
+    targetServerFps = 10;
+    get targetServerTickTimeMs() {
+        return 1000 / this.targetServerFps; // 30 fps = 33.3333 ms per tick
+    }
     constructor() {
         this.wallSquares = [];
         this.spawns = [];
