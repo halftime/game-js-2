@@ -35,7 +35,7 @@ export class GameLoop {
         if (!this.isRunning) return;
 
         while (this.accumulatedTime >= this.TimeStepMs) {
-            this.update(this.TimeStepMs);
+            this.update(this.accumulatedTime);
             this.accumulatedTime = 0; // Reset accumulated time after update
         }
         this.render();
