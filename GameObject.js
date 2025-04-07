@@ -41,7 +41,7 @@ export class gameobject {
 
     addChild(gameObject) {
         if (this.children[gameObject.id]) {
-            console.warn(`Child with id ${gameObject.id} already exists.`);
+            //console.warn(`Child with id ${gameObject.id} already exists.`);
             return;
         }
         this.children[gameObject.id] = gameObject;

@@ -33,19 +33,10 @@ export class GameLoop {
 
     mainloop(timestamp) {
         if (!this.isRunning) return;
-        // this.deltaTime = timestamp - this.lastTime;
-        // this.lastTime = timestamp;
-        //this.accumulatedTime += this.deltaTime;
-
-        //console.log(`mainloop: ${timestamp} ms, deltaTime: ${this.deltaTime} ms, accumulatedTime: ${this.accumulatedTime} ms`);
-        // Limit the accumulated time to avoid large jumps
 
         while (this.accumulatedTime >= this.TimeStepMs) {
-            this.update(this.accumulatedTime);
-            this.accumulatedTime -= this.accumulatedTime; // decr accumulated time after update
-
-            // this.update(this.TimeStepMs); //pass the fixed timestep
-            // this.accumulatedTime -= this.TimeStepMs;
+            this.update(this.TimeStepMs);
+            this.accumulatedTime = 0; // Reset accumulated time after update
         }
         this.render();
         this.rafId = requestAnimationFrame(this.mainloop.bind(this));

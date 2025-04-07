@@ -126,7 +126,7 @@ socket.onmessage = (message) => {
             break;
 
         case 'servertime':
-            console.log("server timestamp received: " + JSON.stringify(data));
+            //console.log("server timestamp received: " + JSON.stringify(data));
             myEvents.emit("servertime", data.time);
             break;
 

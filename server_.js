@@ -3,6 +3,7 @@ import { WebSocketServer } from 'ws';
 import { myServerResource } from './server-resource.js';
 import { playerMouseMoved } from './clientMouseData.js';
 import { walkingLegsSprite } from './sprites.js';
+import { WeaponNames } from './weaponsEnum.js';
 
 const targetInterval = myServerResource.targetServerTickTimeMs;
 const wss = new WebSocketServer({ port: myServerResource.serverPort });
@@ -56,8 +57,8 @@ wss.on('connection', (ws) => {
                 // debug test, remove later
                 currPlayer.takeDamage(20); // testing damage, death
 
-                const darrytest = myServerResource.getRandomKillText("katana", "KILLER", "VICTIM");
-                console.log(darrytest);
+                const killTextTest = myServerResource.getRandomKillText(WeaponNames.AK47, "KILLER", "VICTIM");
+                console.log(killTextTest);
 
 
                 return;

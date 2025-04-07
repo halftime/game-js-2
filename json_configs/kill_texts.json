@@ -113,7 +113,7 @@
             "[Player Name] gunned [Opponent Name] down",
             "[Player Name] unloaded on [Opponent Name]",
             "[Player Name] ambushed [Opponent Name]",
-            "[Player Name] fed [Opponent Name] some 7.62mm",
+            "[Player Name] fed [Opponent Name] 7.62mm lead",
             "[Player Name] blasted [Opponent Name] with an [Weapon Name]",
             "[Player Name] turned into [Opponent Name] big bore swiss cheese",
             "[Player Name] turned [Opponent Name] into a blood fountain",
@@ -121,7 +121,6 @@
             "[Player Name] perforated [Opponent Name] with a hail of bullets",
             "[Player Name] blasted [Opponent Name] with a hail of bullets",
             "[Player Name]'s [Weapon Name] made [Opponent Name] a corpse",
-            "[Player Name]'s [Weapon Name] gave [Opponent Name] some 7.62mm airholes",
             "[Player Name]'s [Weapon Name] had a taste of lead for [Opponent Name]",
             "[Player Name]'s [Weapon Name] had a full magazine of lead for [Opponent Name]"
         ]

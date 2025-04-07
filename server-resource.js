@@ -49,6 +49,8 @@ class ServerResource {
         console.log(">>> loaded kill texts: " + this.killTexts.size);
     }
 
+
+
     getRandomKillText(weaponName, killerName, victimName) {
         const killText = this.killTexts.get(weaponName) ?? undefined;
         if (!killText) {
